@@ -9,21 +9,21 @@
 export default {
   props: { item: { name: String, value: String } },
   data () {
-      return {
-        name: this.item.name,
-        value: this.item.value,
-        type: this.item.type
-      }
+    return {
+      name: this.item.name,
+      value: this.item.value,
+      type: this.item.type
+    }
   },
   methods: {
-      /** @type {InputEvent} */
-      handleChange (e) {
-          const notAllowedKeys = /Digit[0-9]|Minus|Backspace/
-          if (!notAllowedKeys.test(e.code)) {
-              e.preventDefault()
-          }
-          console.debug(`type: ${e.type}\t key: ${e.key} \t code: ${e.code}`)
+    /** @type {InputEvent} */
+    handleChange (e) {
+      const notAllowedKeys = /Digit[0-9]|Minus|Backspace/
+      if (!notAllowedKeys.test(e.code)) {
+        e.preventDefault()
       }
+      console.debug(`type: ${e.type}\t key: ${e.key} \t code: ${e.code}`)
+    }
   }
 }
 </script>
