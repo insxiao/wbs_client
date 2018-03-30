@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import api from '../api'
 
 export default {
@@ -35,8 +34,9 @@ export default {
       const router = this.$router
       api.login(this.username, this.password)
         .then(r => {
-          r.status === '200'
-          router.push('app')
+          if (r.status === '200') {
+            router.push('app')
+          }
           console.debug(r)
         }).catch(reason => {
           console.log('login failed')

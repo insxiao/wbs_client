@@ -22,3 +22,27 @@ body {
   font-size: 1.2rem;
   border-radius: 0;
 }
+.simple-list-box::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 1px;
+}
+.scroll-list-box {
+  overflow-y: scroll;
+  overflow-x: auto;
+}
+.scroll-list-box::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 1px;
+}
+.simple-list-item {
+  width: 100;
+  margin-bottom: 1rem;
+}
+.debug-outline {
+  outline: blue solid 1px;
+  outline-color: 1 1 1;
+}

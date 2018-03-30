@@ -37,3 +37,29 @@ body {
     border-radius: 0;
 
 }
+
+
+.simple-list-box {
+    &::after {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 1px;
+    }
+}
+
+.scroll-list-box {
+    .simple-list-box;
+    overflow-y: scroll;
+    overflow-x: auto; 
+}
+
+.simple-list-item {
+    width: 100;
+    margin-bottom: 1rem;
+}
+
+.debug-outline {
+    outline: blue solid 1px;
+    outline-color: 1 1 1;
+}

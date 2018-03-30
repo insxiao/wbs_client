@@ -1,16 +1,13 @@
-var endpoint = 'http://localhost:9000'
-
-var user = endpoint + '/user'
 import axios from 'axios'
+var endpoint = 'http://192.168.1.68:9000'
 
 axios.create({
   baseURL: endpoint,
   withCredentials: true
 })
 
-const debug = console.debug
-
 export default {
+  // Login in with http authorization
   login (username, password) {
     return axios.get(endpoint + '/user/login', {
       auth: {
