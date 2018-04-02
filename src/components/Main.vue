@@ -1,9 +1,12 @@
 <template>
   <div id="main">
-    <h1>App Main Page</h1>
+    <h1>Weibos</h1>
       <router-view class="view"></router-view>
       <div id="navigator">
-        <router-link :to="{ path: '/main/profile', props: { userdata: user } }">Profile</router-link>
+        <router-link :to="{ path: '/main/top', props: { userdata: user } }"><i class="far fa-hotjar"></i>Hot</router-link>
+        <router-link :to="{ path: '/main/focus', props: { userdata: user } }">Focus</router-link>
+        <router-link :to="{ path: '/main/post', props: { userdata: user } }">Add</router-link>
+        <router-link :to="{ path: '/main/search', props: { userdata: user } }">Search</router-link>
         <router-link :to="{ path: '/main/profile', props: { userdata: user } }">Profile</router-link>
       </div>
   </div>
@@ -11,7 +14,6 @@
 
 <script>
 const debug = true
-
 export default {
   props: ['user'],
   methods: {
@@ -34,16 +36,26 @@ export default {
     if (user === undefined || user === null) {
       this.requireLogin()
     }
-  }
+  },
+  components: { }
 }
 </script>
 
 <style lang="less" scoped>
+  @import url('../less/fontawesome');
+  @import url('../less/fa-regular');
   @import url('../css/common.less');
+
   #main {
     display: flex;
     flex-direction: column;
     height: 100vh;
+  }
+
+  #main h1 {
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+    font-weight: normal;
+    text-transform: uppercase;
   }
 
   .view {
