@@ -3,7 +3,7 @@
     <h1>Weibos</h1>
       <router-view class="view"></router-view>
       <div id="navigator">
-        <router-link :to="{ path: '/main/top', props: { userdata: user } }"><i class="far fa-hotjar"></i>Hot</router-link>
+        <router-link :to="{ path: '/main/top', props: { userdata: user } }"><i class="far fa-coffee"></i>Hot</router-link>
         <router-link :to="{ path: '/main/focus', props: { userdata: user } }">Focus</router-link>
         <router-link :to="{ path: '/main/post', props: { userdata: user } }">Add</router-link>
         <router-link :to="{ path: '/main/search', props: { userdata: user } }">Search</router-link>
