@@ -42,8 +42,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  @import url('../less/fontawesome');
-  @import url('../less/fa-regular');
   @import url('../css/common.less');
 
   #main {

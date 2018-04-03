@@ -4,6 +4,7 @@ import Login from '@/components/Login'
 import AppMain from '@/components/Main'
 import Profile from '@/components/Profile'
 import TODO from '@/components/Todo'
+import NewPost from '@/components/NewPost'
 
 Vue.use(Router)
 
@@ -49,6 +50,10 @@ export default new Router({
     {
       path: '/todo',
       component: TODO
+    },
+    {
+      path: '/new',
+      component: NewPost
     }
   ]
 })
