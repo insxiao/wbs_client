@@ -5,6 +5,7 @@ import AppMain from '@/components/Main'
 import Profile from '@/components/Profile'
 import TODO from '@/components/Todo'
 import NewPost from '@/components/NewPost'
+import PostItem from '@/components/PostItem'
 
 Vue.use(Router)
 
@@ -20,6 +21,7 @@ export default new Router({
       component: AppMain,
       children: [
         {
+          name: 'news',
           path: '',
           props: {
             disableBack: true
@@ -27,12 +29,24 @@ export default new Router({
           component: TODO
         },
         {
+          name: 'news',
+          path: 'news',
+          component: TODO
+        },
+        {
+          name: 'stars',
+          path: 'stars',
+          component: TODO
+        },
+        {
+          name: 'search',
           path: 'search',
           components: {
             default: TODO
           }
         },
         {
+          name: 'profile',
           path: 'profile',
           components: {
             default: Profile
@@ -54,6 +68,10 @@ export default new Router({
     {
       path: '/new',
       component: NewPost
+    },
+    {
+      path: '/item',
+      component: PostItem
     }
   ]
 })

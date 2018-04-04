@@ -3,7 +3,7 @@
     <textarea name="post" id="post" placeholder="输入新内容" v-model="content">
     </textarea>
     <button class="simple-button submit" @click="post">发送</button>
-    <button class="simple-button cancel">取消</button>
+    <button class="simple-button cancel" @click="$router.back()">取消</button>
   </div>
 </template>
 
