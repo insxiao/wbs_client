@@ -4,15 +4,27 @@ import Login from '@/components/Login'
 import AppMain from '@/components/Main'
 import Profile from '@/components/Profile'
 import TODO from '@/components/Todo'
+import NewPost from '@/components/NewPost'
+import PostItem from '@/components/PostItem'
+import Register from '@/components/Register'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
     {
+      path: '/',
+      redirect: '/main'
+    },
+    {
       path: '/login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: Register
     },
     {
       path: '/main',
@@ -20,18 +32,27 @@ export default new Router({
       children: [
         {
           path: '',
-          props: {
-            disableBack: true
-          },
+          redirect: 'news'
+        },
+        {
+          name: 'news',
+          path: 'news',
           component: TODO
         },
         {
+          name: 'stars',
+          path: 'stars',
+          component: TODO
+        },
+        {
+          name: 'search',
           path: 'search',
           components: {
             default: TODO
           }
         },
         {
+          name: 'profile',
           path: 'profile',
           components: {
             default: Profile
@@ -49,6 +70,14 @@ export default new Router({
     {
       path: '/todo',
       component: TODO
+    },
+    {
+      path: '/new',
+      component: NewPost
+    },
+    {
+      path: '/item',
+      component: PostItem
     }
   ]
 })

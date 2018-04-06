@@ -15,16 +15,14 @@ export default {
 
       this.$router.go(-1)
     }
+  },
+  created () {
+    console.log('create todo')
   }
 }
 </script>
 
 <style lang="less" scoped>
-
-  .comp {
-    height: 100vh;
-  }
-
   .comp h1 {
     display: block;
     margin: auto 0;

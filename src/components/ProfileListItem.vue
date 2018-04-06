@@ -35,9 +35,24 @@ export default {
 }
 
 .title {
-    font-family: 'Times New Roman', Times, serif;
-    font-weight: bold;
-    font-size: .5rem;
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  font-size: .5rem;
+  line-height: .5rem;
+  position: relative;
+  text-transform: uppercase;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 2px;
+    height: .5rem;
+    background: @dark-grey;
+    font-weight: bolder;
+    position: absolute;
+    left: -5px;
+  }
+
 }
 
 .value {

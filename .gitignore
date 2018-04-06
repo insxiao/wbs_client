@@ -15,3 +15,6 @@ yarn-error.log*
 
 src/Debug.js
 test/
+
+www/
+platforms/
