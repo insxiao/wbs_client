@@ -6,6 +6,7 @@ import Profile from '@/components/Profile'
 import TODO from '@/components/Todo'
 import NewPost from '@/components/NewPost'
 import PostItem from '@/components/PostItem'
+import Register from '@/components/Register'
 
 Vue.use(Router)
 
@@ -21,16 +22,17 @@ export default new Router({
       component: Login
     },
     {
+      path: '/register',
+      name: 'register',
+      component: Register
+    },
+    {
       path: '/main',
       component: AppMain,
       children: [
         {
-          name: 'news',
           path: '',
-          props: {
-            disableBack: true
-          },
-          component: TODO
+          redirect: 'news'
         },
         {
           name: 'news',

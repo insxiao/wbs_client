@@ -3,11 +3,16 @@
       <div class="profile-list">
           <ProfileListItem :key="idx" :item="item" v-for="(item, idx) in profileProps" />
       </div>
+    <div class="clear-data">
+      <button class="simple-button" @click="clearDataAndRestart">Log out</button>
+    </div>
   </div>
 </template>
 
 <script>
 import ProfileListItem from './ProfileListItem'
+
+const localStorage = window.localStorage
 
 export default {
   data () {
@@ -59,6 +64,12 @@ export default {
       return this.profile_item_order.map(key => Object.assign({
         name: key,
         value: this.computedUserDate[key] }, this.access_modifier[key]))
+    }
+  },
+  methods: {
+    clearDataAndRestart () {
+      localStorage.clear()
+      this.$router.replace('/login')
     }
   },
   components: { ProfileListItem }
