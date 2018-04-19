@@ -34,13 +34,20 @@ export default {
         .then(r => {
           if (r.status === 200) {
             console.debug('login success')
-            router.push('/main')
+            this.$logger.debug(r.data)
           }
-          console.debug(r)
-        }).catch(reason => {
+          this.$logger.debug(r)
+          return {
+            status: 'Ok',
+            statusCode: 200
+          }
+        }, reason => {
           console.log('login failed')
           console.log(reason)
         })
+    },
+    fetchUserInfo (id) {
+      return this.$client.getUserInfo(id)
     }
   }
 }

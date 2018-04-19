@@ -56,6 +56,9 @@ export default function (endpoint) {
       checkRequiredInfo()
 
       return client.post('/users', registerInfo)
+    },
+    getUserInfo (userId) {
+      return client.get('/users/' + userId)
     }
   }
 }
