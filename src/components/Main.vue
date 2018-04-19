@@ -1,25 +1,27 @@
 <template>
-  <div id="main">
-    <h1>Weibos</h1>
-      <router-view class="view"></router-view>
-      <div id="navigator">
-        <router-link :class="{'active-panel': fNews}" @click.native="switchTo(NEWS)" :to="{ path: '/main/news', props: { userdata: user } }">
-          <font-awesome-icon icon="newspaper" size="2x"></font-awesome-icon>
-        </router-link>
-        <router-link :class="{'active-panel': fStars }" @click.native="switchTo(STARS)" :to="{ path: '/main/stars', props: { userdata: user } }">
-          <font-awesome-icon icon="star" size="2x"></font-awesome-icon>
-        </router-link>
-        <router-link :class="{'active-panel': fPost }" :to="{ path: '/new', props: { userdata: user } }">
-          <font-awesome-icon icon="plus" size="2x"></font-awesome-icon>
-        </router-link>
-        <router-link :class="{'active-panel': fSearch }" @click.native="switchTo(SEARCH)" :to="{ path: '/main/search', props: { userdata: user } }">
-          <font-awesome-icon icon="search" size="2x"></font-awesome-icon>
-        </router-link>
-        <router-link :class="{'active-panel': fProfile }" @click.native="switchTo(PROFILE)" :to="{ path: '/main/profile', props: { userdata: user } }">
-          <font-awesome-icon icon="user" size="2x"></font-awesome-icon>
-        </router-link>
-      </div>
-  </div>
+  <keep-alive>
+    <div id="main">
+      <h1>Weibos</h1>
+        <router-view class="view"></router-view>
+        <div id="navigator">
+          <router-link :class="{'active-panel': fNews}" @click.native="switchTo(NEWS)" :to="{ path: '/main/news', props: { userdata: user } }">
+            <font-awesome-icon icon="newspaper" size="2x"></font-awesome-icon>
+          </router-link>
+          <router-link :class="{'active-panel': fStars }" @click.native="switchTo(STARS)" :to="{ path: '/main/stars', props: { userdata: user } }">
+            <font-awesome-icon icon="star" size="2x"></font-awesome-icon>
+          </router-link>
+          <router-link :class="{'active-panel': fPost }" :to="{ path: '/new', props: { userdata: user } }">
+            <font-awesome-icon icon="plus" size="2x"></font-awesome-icon>
+          </router-link>
+          <router-link :class="{'active-panel': fSearch }" @click.native="switchTo(SEARCH)" :to="{ path: '/main/search', props: { userdata: user } }">
+            <font-awesome-icon icon="search" size="2x"></font-awesome-icon>
+          </router-link>
+          <router-link :class="{'active-panel': fProfile }" @click.native="switchTo(PROFILE)" :to="{ path: '/main/profile', props: { userdata: user } }">
+            <font-awesome-icon icon="user" size="2x"></font-awesome-icon>
+          </router-link>
+        </div>
+    </div>
+  </keep-alive>
 </template>
 
 <script>

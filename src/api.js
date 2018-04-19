@@ -1,3 +1,4 @@
+'use strict'
 import axios from 'axios'
 
 /**
@@ -13,7 +14,7 @@ export default function (endpoint) {
   return {
     // Login in with http authorization
     login (username, password) {
-      return client.get(endpoint + '/user/login', {
+      return client.get(endpoint + '/users/login', {
         auth: {
           username,
           password

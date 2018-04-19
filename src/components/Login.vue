@@ -13,8 +13,6 @@
 </template>
 
 <script>
-import api from '../api'
-
 export default {
   data () {
     return {
@@ -24,7 +22,7 @@ export default {
   },
   methods: {
     register () {
-      console.log('click register')
+      this.$logger.log('click register')
       this.$router.push('register')
     },
     echo () {
@@ -32,10 +30,11 @@ export default {
     },
     login () {
       const router = this.$router
-      api.login(this.username, this.password)
+      this.$client.login(this.username, this.password)
         .then(r => {
-          if (r.status === '200') {
-            router.push('app')
+          if (r.status === 200) {
+            console.debug('login success')
+            router.push('/main')
           }
           console.debug(r)
         }).catch(reason => {

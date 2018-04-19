@@ -8,13 +8,15 @@ import fontawesome from '@fortawesome/fontawesome'
 import { faUser, faNewspaper, faStar } from '@fortawesome/fontawesome-free-regular'
 import { faSearch, faPlus } from '@fortawesome/fontawesome-free-solid'
 
-import buildClient from './ClientPlugin'
+import buildClient from './plugins/ClientPlugin'
+import Logger from './plugins/LoggerPlugin'
 
 import 'element-ui/lib/theme-chalk/index.css'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
-Vue.use(buildClient('http://192.168.1.68:9000'))
+Vue.use(buildClient('http://localhost:9000'))
+Vue.use(Logger)
 
 fontawesome.library.add(faUser, faPlus, faSearch, faNewspaper, faStar)
 /* eslint-disable no-new */
