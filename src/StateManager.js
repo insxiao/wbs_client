@@ -7,6 +7,7 @@ function serviceFactoryBuilder () {
     if (storage === undefined || storage === null) {
       throw new Error('local storage unavailable')
     }
+    let userCache
     return {
       getCurrentUser () {
         const user = storage[userKey]
@@ -15,6 +16,15 @@ function serviceFactoryBuilder () {
         } else {
           return JSON.parse(user)
         }
+      },
+      get currentUser () {
+        if (!userCache) {
+          userCache = this.getCurrentUser()
+        }
+        return userCache
+      },
+      set currentUser (user) {
+        this.updateUser(user)
       },
       /**
        * save user to local storage

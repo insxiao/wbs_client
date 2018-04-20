@@ -2,12 +2,13 @@
   <div class="comp">
     <textarea name="post" id="post" placeholder="输入新内容" v-model="content">
     </textarea>
-    <button class="simple-button submit" @click="post">发送</button>
+    <button ref="send" class="simple-button submit" @click="post">发送</button>
     <button class="simple-button cancel" @click="$router.back()">取消</button>
   </div>
 </template>
 
 <script>
+import PostData from '../models/PostData'
 export default {
   data () {
     return {
@@ -15,8 +16,22 @@ export default {
     }
   },
   methods: {
+    disableSendButton () {
+      this.$refs.send.disabled = true
+    },
+    enableSendButton () {
+      this.$refs.send.disabled = false
+    },
     post () {
-      console.log('post data', this.content)
+      this.$logger.debug('click post')
+      this.disableSendButton()
+      const data = new PostData(this.content, this.$appState.currentUser.id)
+      this.$client.postBlog(data).then(r => {
+        this.$router.back()
+      },
+      r => {
+        // TODO
+      }).finally(() => this.enableSendButton())
     }
   }
 }

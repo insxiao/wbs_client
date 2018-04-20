@@ -4,7 +4,7 @@
           <ProfileListItem :key="idx" :item="item" v-for="(item, idx) in profileProps" />
       </div>
     <div class="clear-data">
-      <button class="simple-button" @click="clearDataAndRestart">Log out</button>
+      <button class="simple-button logout" @click="clearDataAndRestart">Log out</button>
     </div>
   </div>
 </template>
@@ -82,5 +82,11 @@ export default {
 .profile-value {
   font-size: 3rem;
   overflow-wrap: normal;
+}
+
+.logout {
+  width:100%;
+  background: darkred;
+  padding: 0.5rem;
 }
 </style>

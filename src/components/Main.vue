@@ -26,10 +26,8 @@
 
 <script>
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
-import Config from '../config'
 
 const storage = window.localStorage
-const debug = Config.debug
 
 const NEWS = 'news'
 const STARS = 'stars'
@@ -121,14 +119,6 @@ export default {
     }
   },
   created () {
-    if (debug) {
-      storage['user'] = JSON.stringify({
-        id: 0,
-        name: 'zero',
-        gender: 'M',
-        email: 'zero@zero.zero'
-      })
-    }
     if (!this.getCurrentPanel()) {
       this.switchTo(this.NEWS)
     }
@@ -138,7 +128,7 @@ export default {
       return
     }
     const user = JSON.parse(userJson)
-    if (user) { console.debug(user) }
+    if (user) { this.$logger.debug(user) }
   },
   components: { FontAwesomeIcon }
 }

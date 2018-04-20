@@ -27,38 +27,17 @@ export default function (endpoint) {
      * @param registerInfo object with user input data
      */
     register (registerInfo) {
-      function checkRequiredInfo () {
-        const requiredFields = ['name', 'password', 'gender']
-        if (registerInfo === undefined || registerInfo === null) {
-          throw new Error('register info is undefined or null')
-        }
-
-        const missingRequiredField = requiredFields.some(f => registerInfo[f] === undefined ||
-          registerInfo[f] === undefined)
-        if (missingRequiredField) {
-          throw new Error('register missing required fields')
-        }
-
-        let nameLength = registerInfo.name.length
-        if (nameLength < 2) {
-          throw new Error('name too short')
-        }
-
-        if (nameLength > 255) {
-          throw new Error('name too long')
-        }
-
-        const birthdayFormat = /^(\d{4})-(0[1-9]|1[0-2])-(\d{2})$/
-        if (registerInfo.birthday && !birthdayFormat.test(registerInfo.birthday)) {
-          throw new Error('birthday format error')
-        }
-      }
-      checkRequiredInfo()
-
       return client.post('/users', registerInfo)
     },
     getUserInfo (userId) {
       return client.get('/users/' + userId)
+    },
+    post (message) {
+      return client.post('/posts', {
+        content: message.content,
+        userId: message.userId,
+        timestamp: message.timestamp
+      })
     }
   }
 }
