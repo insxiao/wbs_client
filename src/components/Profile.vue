@@ -44,32 +44,24 @@ export default {
   },
   props: ['userdata'],
   computed: {
-    computedUserDate () {
-      console.log(this.userdata)
-      if (this.userdata === undefined || this.userdata === null) {
-        return {
-          id: 0xFF,
-          name: 'fake name',
-          email: 'fake@fake.fake',
-          gender: 'unknow',
-          birthday: '0000-00-00'
-        }
-      } else {
-        return this.userdata
-      }
+    currentUser () {
+      return this.$appState.getCurrentUser()
     },
     profileProps () {
       console.debug(`this is userdata`, this.computedUserDate)
 
       return this.profile_item_order.map(key => Object.assign({
         name: key,
-        value: this.computedUserDate[key] }, this.access_modifier[key]))
+        value: this.currentUser[key] }, this.access_modifier[key]))
     }
   },
   methods: {
     clearDataAndRestart () {
       localStorage.clear()
       this.$router.replace('/login')
+    },
+    getUser () {
+      return this.$appState.getCurrentUser()
     }
   },
   components: { ProfileListItem }

@@ -20,7 +20,7 @@ export default {
     }
   },
   created () {
-    console.log('create todo')
+    this.$logger.debug('create todo')
   }
 }
 </script>

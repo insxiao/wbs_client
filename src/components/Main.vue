@@ -140,10 +140,6 @@ export default {
     const user = JSON.parse(userJson)
     if (user) { console.debug(user) }
   },
-  beforeRouteUpdate (to, from, next) {
-    console.log(to)
-    next()
-  },
   components: { FontAwesomeIcon }
 }
 </script>

@@ -14,12 +14,14 @@ import 'element-ui/lib/theme-chalk/index.css'
 import buildClient from './plugins/ClientPlugin'
 import Logger from './plugins/LoggerPlugin'
 import LocalStorageAccessPlugin from './plugins/LocalStorageAccessPlugin'
+import { VuePlugin as StatePlugin } from './StateManager'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.use(buildClient('http://localhost:9000'))
 Vue.use(Logger)
 Vue.use(LocalStorageAccessPlugin)
+Vue.use(StatePlugin)
 
 fontawesome.library.add(faUser, faPlus, faSearch, faNewspaper, faStar)
 /* eslint-disable no-new */

@@ -29,12 +29,12 @@ export default {
       console.log('hello')
     },
     login () {
-      const router = this.$router
       this.$client.login(this.username, this.password)
         .then(r => {
           if (r.status === 200) {
             console.debug('login success')
             this.$logger.debug(r.data)
+            this.$appState.updateUser(r.data)
           }
           this.$logger.debug(r)
           return {
@@ -42,12 +42,9 @@ export default {
             statusCode: 200
           }
         }, reason => {
-          console.log('login failed')
-          console.log(reason)
-        })
-    },
-    fetchUserInfo (id) {
-      return this.$client.getUserInfo(id)
+          this.$logger.debug('login failed')
+          this.$logger.debug(reason)
+        }).then(() => this.$router.push('/main'))
     }
   }
 }
