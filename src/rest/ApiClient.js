@@ -55,4 +55,7 @@ export default class {
       timestamp: blog.timestamp
     })
   }
+  getMostRecentPost () {
+    return this.axios.get('/posts')
+  }
 }

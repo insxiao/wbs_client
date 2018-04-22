@@ -29,22 +29,28 @@ export default {
       console.log('hello')
     },
     login () {
+      const loading = this.$loading()
       this.$client.login(this.username, this.password)
         .then(r => {
+          loading.close()
           if (r.status === 200) {
             console.debug('login success')
-            this.$logger.debug(r.data)
+            this.$logger.debug('response data ' + r.data)
             this.$appState.updateUser(r.data)
           }
-          this.$logger.debug(r)
+          this.$logger.debug('response object ' + r)
           return {
             status: 'Ok',
             statusCode: 200
           }
         }, reason => {
-          this.$logger.debug('login failed')
-          this.$logger.debug(reason)
-        }).then(() => this.$router.push('/main'))
+          loading.close()
+          this.$logger.debug('login failed' + reason)
+          const error = this.$message.error('登陆失败，用户名或密码错误')
+          setTimeout(() => error.close(), 1000)
+        }).then(() => {
+          this.$router.push('/main')
+        })
     }
   }
 }

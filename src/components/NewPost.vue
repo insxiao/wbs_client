@@ -12,7 +12,8 @@ import PostData from '../models/PostData'
 export default {
   data () {
     return {
-      content: ''
+      content: '',
+      loading: true
     }
   },
   methods: {
@@ -20,19 +21,42 @@ export default {
       this.$refs.send.disabled = true
     },
     enableSendButton () {
+      if (!this.$refs.send) return
       this.$refs.send.disabled = false
     },
     post () {
+      const loading = this.$loading()
       this.$logger.debug('click post')
       this.disableSendButton()
       const data = new PostData(this.content, this.$appState.currentUser.id)
-      this.$client.postBlog(data).then(r => {
+      this.$client.postBlog(data).then(delay(1)).then(r => {
+        const m = this.$message({
+          type: 'success',
+          message: '发送成功'
+        })
+        setTimeout(() => m.close(), 1000)
         this.$router.back()
       },
       r => {
-        // TODO
-      }).finally(() => this.enableSendButton())
+        loading.close()
+        this.enableSendButton()
+        const m = this.$message.error('发送失败')
+        setTimeout(() => m.close(), 1000)
+      }).finally(() => {
+        this.enableSendButton()
+        loading.close()
+      })
     }
+  }
+}
+
+function delay (seconds) {
+  return function (value) {
+    return new Promise((resolve, reject) => {
+      setTimeout(function () {
+        resolve(value)
+      }, seconds * 1000)
+    })
   }
 }
 </script>
