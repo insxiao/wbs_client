@@ -38,7 +38,7 @@ export default new Router({
         {
           name: 'news',
           path: 'news',
-          component: TODO
+          component: BlogList
         },
         {
           name: 'stars',

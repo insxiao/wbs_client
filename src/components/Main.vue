@@ -1,7 +1,6 @@
 <template>
   <keep-alive>
     <div id="main">
-      <h1>Weibos</h1>
         <router-view class="view"></router-view>
         <div id="navigator">
           <router-link :class="{'active-panel': fNews}" @click.native="switchTo(NEWS)" :to="{ path: '/main/news', props: { userdata: user } }">

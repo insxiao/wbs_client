@@ -1,20 +1,21 @@
 <template>
   <div class="item-container">
-    <div class="user" @click="$emit('clickAvatar', post.userId)">
+    <div class="user" @click="$emit('clickAvatar', item.userId)">
       <img class="avatar" :src="avatarUrl"/>
-      <div class="nick">{{ post.name || 'username' }}</div>
+      <div class="nick">{{ postOwner.name || 'username' }}</div>
     </div>
-    <div class="content" @click="$emit('clickItem', id)"> {{ post.content }} </div>
-    <div class="timestamp"> {{ post.timestamp | transformISODate }} </div>
+    <div class="content" @click="$emit('clickItem', id)"> {{ item.content }} </div>
+    <div class="timestamp"> {{ item.timestamp | transformISODate }} </div>
   </div>
 </template>
 
 <script>
 export default {
-  props: ['post', 'id'],
+  props: ['item', 'id'],
   data () {
     return {
-      avatarUrl: 'hello'
+      avatarUrl: undefined,
+      postOwner: {}
     }
   },
   computed: {
@@ -35,13 +36,13 @@ export default {
       if (!_dt) {
         return datetime
       } else {
-        let date = _dt.toLocaleDateString().split('-')
+        const dateDelimiter = '/'
+        let date = _dt.toLocaleDateString().split(dateDelimiter)
         let time = _dt.toLocaleTimeString()
-        let dateNow = new Date().toLocaleDateString().split('_')
+        let dateNow = new Date().toLocaleDateString().split(dateDelimiter)
         while ((date.length !== 0) && (date[0] === dateNow[0])) {
           date.shift()
           dateNow.shift()
-          console.log('?????')
         }
         if (date.length === 0) {
           return time
@@ -55,8 +56,29 @@ export default {
       }
     }
   },
-  created () {
-    console.log(this)
+  watch: {
+    postOwner (newVal, oldVal) {
+      if (newVal.avatar !== undefined && newVal.avatar !== null) {
+        this.avatarUrl = this.$client.getAvatarUrl(newVal.avatar)
+      }
+    },
+    avatarUrl (newVal, oldVal) {
+      this.$logger.debug(`avatar url changed to ${newVal}`)
+    }
+  },
+  created () { },
+  mounted () {
+    this.$client.getUserInfo({ userId: this.item.userId })
+      .then(r => {
+        if (r.status === 200) {
+          this.postOwner = r.data
+          this.$logger.debug('fetch user info ' + this.postOwner.id, this.postOwner)
+        } else {
+          this.$logger.warn('failed to load post owener data')
+        }
+      }).catch(reason => {
+        this.$logger.debug('failed to fetch user info')
+      })
   }
 }
 </script>

@@ -2,8 +2,10 @@
   <ol class="container">
     <li :key="index" v-for="(item, index) in items">
       <slot :item="item" :index="index">
-        ÎÞÄÚÈÝ
       </slot>
+    </li>
+    <li>
+      <slot name="footer"></slot>
     </li>
   </ol>
 </template>
