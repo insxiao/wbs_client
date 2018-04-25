@@ -1,6 +1,7 @@
 import axios from 'axios'
+import NavieCache from '../NaiveCache'
 
-const userCache = new WeakMap()
+const userCache = new NavieCache()
 
 export default class {
   constructor (endpoint) {
@@ -51,23 +52,22 @@ export default class {
   }
   getUserInfo (options) {
     const key = options.userId.toString()
-    if (options.force) {
-      if (userCache.has(key)) {
-        return Promise.resolve(userCache.get(key))
-      }
+    if (userCache.has(key) && userCache.get(key)) {
+      return userCache.get(key)
     }
-    console.log('request')
+
     const p = this.axios.get('/users/' + options.userId)
-      .then(r => {
-        console.log('get user ' + options.userId)
-        if (r.status === 200) {
-          userCache.set(key, r)
-          console.log(r)
-        }
-        return r
-      })
-      console.log(p)
-      return p
+    userCache.set(key, p)
+    p.then(r => {
+      if (r.status !== 200) {
+        userCache.delete(key)
+      }
+      return r
+    }, reason => {
+      userCache.delete(key)
+      return Promise.reject(reason)
+    })
+    return p
   }
   postBlog (blog) {
     return this.axios.post('/posts', {

@@ -7,8 +7,8 @@ import TODO from '@/components/Todo'
 import NewPost from '@/components/NewPost'
 import PostItem from '@/components/PostItem'
 import Register from '@/components/Register'
-import BlogList from '@/components/BlogList.vue'
-
+import BlogList from '@/components/BlogList'
+import Search from '@/components/Search'
 Vue.use(Router)
 
 export default new Router({
@@ -48,9 +48,7 @@ export default new Router({
         {
           name: 'search',
           path: 'search',
-          components: {
-            default: TODO
-          }
+          component: Search
         },
         {
           name: 'profile',
