@@ -18,6 +18,7 @@
 import SimpleList from './SimpleList'
 import PostItem from './PostItem'
 export default {
+  props: ['dataUrl'],
   data () {
     return {
       items: [],
