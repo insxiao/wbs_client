@@ -8,7 +8,6 @@
     </div>
     <simple-list :items="items">
       <template name="header">
-
       </template>
       <post-item slot-scope="{ item, index }" :item="item" :id="item.id"></post-item>
       <template name="footer">

@@ -1,15 +1,13 @@
 <template>
   <div class="container">
     <simple-list ref="simpleList" :items="items">
-      <post-item></post-item>
       <template slot-scope="{ item, index }">
         <post-item :item="item" :id="item.id"></post-item>
       </template>
-      <template slot="footer">
-        <div :disabled="loadMoreDisabled" id="load-more" @click="loadMore">
-          <p>{{ nextButtonText}}</p>
-        </div>
-      </template>
+
+      <div slot="footer" :style="footerStyle" :disabled="loadMoreDisabled" id="load-more" @click="loadMore">
+        <p>{{ nextButtonText}}</p>
+      </div>
     </simple-list>
   </div>
 </template>
@@ -25,7 +23,10 @@ export default {
       nextURL: null,
       nextButtonText: 'load more',
       loadMoreDisabled: false,
-      hasMore: true
+      hasMore: true,
+      footerStyle: {
+        display: 'none'
+      }
     }
   },
   methods: {
@@ -33,8 +34,11 @@ export default {
       this.nextButtonText = 'no more data'
       this.loadMoreDisabled = true
     },
+    showLoadMore () {
+      this.footerStyle.display = 'block'
+    },
     loadMore () {
-      this.$logger.debug('load more with ' + this.nextURL)
+      this.$logger.debug('load more with ', this.nextURL)
       if (!this.hasMore) return
       const loading = this.$loading({ target: '#load-more' })
       this.$client
@@ -48,24 +52,13 @@ export default {
               this.hasMore = false
             } else {
               this.items = this.items.concat(r.data.posts)
-              this.nextURL = r.data.next
+              this.nextURL = r.data.next.url
             }
           }
         }).finally(() => this.$nextTick(() => loading.close()))
     }
   },
-  computed: {
-    listScrollHandler () {
-      function handler (event) {
-        const target = event.target
-        this.$logger.debug('scrollHandler')
-        if (target.scrollTop + target.clientHeight === target.scrollHeight) {
-          this.$emit('scrollToBottom')
-        }
-      }
-      return handler.bind(this)
-    }
-  },
+  computed: { },
   components: {
     SimpleList,
     PostItem
@@ -78,19 +71,15 @@ export default {
           throw new Error('Unauthorized')
         } else if (r.status === 200) {
           this.items = r.data.posts
-          this.nextURL = r.data.next
+          this.nextURL = r.data.next.url
+          this.$logger.debug(r.data.next)
+          this.showLoadMore()
         } else {
           throw new Error('failed to fetch blogs')
         }
       })
   },
-  mounted () {
-    function registerScrollHandler (element, func) {
-      element.addEventListener('scroll', func)
-    }
-    this.$logger.debug(this.$refs)
-    registerScrollHandler(this.$refs.simpleList.$el, this.listScrollHandler)
-  }
+  mounted () { }
 }
 </script>
 

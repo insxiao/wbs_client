@@ -93,6 +93,18 @@ export default class {
       return endpoint + '/' + path
     }
   }
+  search (query) {
+    const allowedParams = ['q', 'type']
+    const params = Object.keys(query)
+      .filter(key => allowedParams.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = query[key];
+        return obj }, {})
+    console.log('query params', params)
+    this.axios.get('/search', {
+      params
+    })
+  }
   get userCache () {
     return userCache
   }
