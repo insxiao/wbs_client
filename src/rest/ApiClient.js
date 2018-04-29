@@ -94,14 +94,15 @@ export default class {
     }
   }
   search (query) {
-    const allowedParams = ['q', 'type']
+    const allowedParams = ['q', 'type', 'offset', 'size']
     const params = Object.keys(query)
       .filter(key => allowedParams.includes(key))
       .reduce((obj, key) => {
-        obj[key] = query[key];
-        return obj }, {})
+        obj[key] = query[key]
+        return obj
+      }, {})
     console.log('query params', params)
-    this.axios.get('/search', {
+    return this.axios.get('/search', {
       params
     })
   }

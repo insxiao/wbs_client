@@ -25,18 +25,15 @@ export default {
       this.$logger.log('click register')
       this.$router.push('register')
     },
-    echo () {
-      console.log('hello')
-    },
     login () {
       const loading = this.$loading()
       this.$client.login(this.username, this.password)
         .then(r => {
           loading.close()
           if (r.status === 200) {
-            console.debug('login success')
             this.$logger.debug('response data ' + r.data)
-            this.$appState.updateUser(r.data)
+
+            this.$appState.currentUser = r.data
           }
           this.$logger.debug('response object ' + r)
           return {

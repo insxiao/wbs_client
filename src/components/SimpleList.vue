@@ -1,11 +1,11 @@
 <template>
-  <ol class="container">
+  <ol class="list-container">
     <li :key="index" v-for="(item, index) in items">
       <slot :item="item" :index="index">
       </slot>
     </li>
-    <li>
-      <slot name="footer"></slot>
+    <li :class="{ 'display-none': fHideFooter }">
+      <slot name="footer" class="list-footer"></slot>
     </li>
   </ol>
 </template>
@@ -14,7 +14,17 @@
 export default {
   props: ['items'],
   data () {
-    return { }
+    return {
+      fHideFooter: false
+    }
+  },
+  methods: {
+    hideFooter () {
+      this.fHideFooter = true
+    },
+    showFooter () {
+      this.fHideFooter = false
+    }
   }
 }
 </script>
@@ -24,4 +34,12 @@ export default {
   li {
     list-style: none;
   }
+
+  .list-container {
+  }
+
+  .display-none {
+    display: none;
+  }
+
 </style>

@@ -129,6 +129,20 @@ export default {
     const user = JSON.parse(userJson)
     if (user) { this.$logger.debug(user) }
   },
+  watch: {
+    '$route' (to, from) {
+      switch (to.name) {
+        case 'news': this.switchTo(NEWS)
+          break
+        case 'stars': this.switchTo(STARS)
+          break
+        case 'search': this.switchTo(SEARCH)
+          break
+        case 'profile': this.switchTo(PROFILE)
+          break
+      }
+    }
+  },
   components: { FontAwesomeIcon }
 }
 </script>
@@ -139,7 +153,7 @@ export default {
   #main {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
   }
 
   #main a {
@@ -165,7 +179,7 @@ export default {
   }
 
   #navigator {
-    height: 64px;
+    min-height: 64px;
     flex-grow: 0;
     display: flex;
     justify-content: space-evenly;

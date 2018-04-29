@@ -1,6 +1,5 @@
 <template>
-  <div class="container">
-    <simple-list ref="simpleList" :items="items">
+    <simple-list class="container" ref="simpleList" :items="items">
       <template slot-scope="{ item, index }">
         <post-item :item="item" :id="item.id"></post-item>
       </template>
@@ -9,7 +8,6 @@
         <p>{{ nextButtonText}}</p>
       </div>
     </simple-list>
-  </div>
 </template>
 
 <script>
@@ -88,8 +86,8 @@ export default {
   @import '../css/common';
 
   .container {
-    overflow-y: scroll;
-    height: 100%;
+    overflow-y: auto;
+
   }
 
   #load-more {

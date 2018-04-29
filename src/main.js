@@ -3,6 +3,9 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+
+import config from './config'
+
 import ElementUI from 'element-ui'
 import fontawesome from '@fortawesome/fontawesome'
 import { faUser, faNewspaper, faStar } from '@fortawesome/fontawesome-free-regular'
@@ -17,8 +20,9 @@ import LocalStorageAccessPlugin from './plugins/LocalStorageAccessPlugin'
 import { VuePlugin as AppState } from './StateManager'
 
 Vue.config.productionTip = false
+
 Vue.use(ElementUI)
-Vue.use(ClientPlugin, { endpoint: 'http://localhost:9000' })
+Vue.use(ClientPlugin, { endpoint: config.endpoint })
 Vue.use(LoggerPlugin)
 Vue.use(LocalStorageAccessPlugin)
 Vue.use(AppState)
@@ -31,3 +35,8 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
+
+// expose Vue to global environment
+if (window) {
+  window.Vue = Vue
+}

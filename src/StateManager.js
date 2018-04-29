@@ -46,6 +46,7 @@ function serviceFactoryBuilder () {
           throw new Error('missing required fields')
         }
         storage[userKey] = JSON.stringify(userObj)
+        userCache = userObj
       }
     }
   }

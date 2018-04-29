@@ -29,6 +29,10 @@ export default {
       this.$logger.debug('click post')
       this.disableSendButton()
       const data = new PostData(this.content, this.$appState.currentUser.id)
+      this.$logger.debug('current user is', this.$appState.currentUser)
+
+      this.$logger.debug(data)
+
       this.$client.postBlog(data).then(delay(1)).then(r => {
         const m = this.$message({
           type: 'success',

@@ -5,10 +5,10 @@ import AppMain from '@/components/Main'
 import Profile from '@/components/Profile'
 import TODO from '@/components/Todo'
 import NewPost from '@/components/NewPost'
-import PostItem from '@/components/PostItem'
 import Register from '@/components/Register'
 import BlogList from '@/components/BlogList'
 import Search from '@/components/Search'
+import ToggleGroup from '@/components/ToggleGroup'
 Vue.use(Router)
 
 export default new Router({
@@ -60,35 +60,16 @@ export default new Router({
       ]
     },
     {
-      path: '/profile',
-      props: {
-        userdata: null
-      },
-      component: Profile
-    },
-    {
-      path: '/todo',
-      component: TODO
-    },
-    {
       path: '/new',
       component: NewPost
     },
     {
-      path: '/item',
-      component: PostItem,
+      path: '/toggle',
       props: {
-        post: {
-          userId: 0,
-          id: 2,
-          content: 'test item content',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 360).toISOString()
-        }
-      }
-    },
-    {
-      path: '/test/list',
-      component: BlogList
+        text: 'button',
+        active: false
+      },
+      component: ToggleGroup
     }
   ]
 })
