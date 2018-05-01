@@ -170,11 +170,10 @@ export default {
           this.$logger.debug(r)
           if (r.status === 200) {
             this.$logger.debug('register successful')
-            const msg = this.$message({
+            this.$msg({
               type: 'success',
               message: '注册成功'
             })
-            setTimeout(() => msg.close(), 1000)
             this.$router.back()
           }
         },
@@ -183,8 +182,7 @@ export default {
           if (reason.response) {
             const r = reason.response
             if (r.status === 409) {
-              const msg = this.$message.error('用户名已存在')
-              setTimeout(() => msg.close(), 1000)
+              this.$msg({ message: '用户名已存在', type: 'error' })
             }
           }
         }).finally(() => loading.close())

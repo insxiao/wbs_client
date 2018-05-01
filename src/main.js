@@ -10,8 +10,11 @@ import ElementUI from 'element-ui'
 import fontawesome from '@fortawesome/fontawesome'
 import { faUser, faNewspaper, faStar } from '@fortawesome/fontawesome-free-regular'
 import { faSearch, faPlus } from '@fortawesome/fontawesome-free-solid'
+import MsgPlugin from './plugins/MsgPlugin'
 
 import 'element-ui/lib/theme-chalk/index.css'
+
+import './css/common.less'
 
 // plugins
 import ClientPlugin from './plugins/ClientPlugin'
@@ -29,6 +32,9 @@ Vue.use(AppState)
 
 fontawesome.library.add(faUser, faPlus, faSearch, faNewspaper, faStar)
 /* eslint-disable no-new */
+
+Vue.use(MsgPlugin)
+
 new Vue({
   el: '#app',
   router,

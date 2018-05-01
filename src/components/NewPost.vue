@@ -34,18 +34,16 @@ export default {
       this.$logger.debug(data)
 
       this.$client.postBlog(data).then(delay(1)).then(r => {
-        const m = this.$message({
+        this.$msg({
           type: 'success',
           message: '发送成功'
         })
-        setTimeout(() => m.close(), 1000)
         this.$router.back()
       },
       r => {
         loading.close()
         this.enableSendButton()
-        const m = this.$message.error('发送失败')
-        setTimeout(() => m.close(), 1000)
+        this.$msg({ message: '发送失败', type: 'error' })
       }).finally(() => {
         this.enableSendButton()
         loading.close()

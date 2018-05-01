@@ -41,10 +41,9 @@ export default {
   methods: {
     search () {
       if (!this.text || this.text.length === 0) {
-        const m = this.$message({
+        this.$msg({
           message: '请输入搜索内容', type: 'warning'
         })
-        setTimeout(() => m.close(), 500)
         return
       }
       const loading = this.$loading()
@@ -57,10 +56,10 @@ export default {
           this.setSearchResults(r.data)
           this.showLoadMore()
         } else if (r.status === 204) {
-          this.showErrorMessage({ text: '无内容' })
+          this.$msg({ message: '无内容', type: 'warning' })
         }
       }).catch(reason => {
-        this.showErrorMessage('错误：无法获取数据')
+        this.$msg({ message: '错误：无法获取数据', type: 'error' })
       }).finally(() => loading.close())
     },
     changeType (type) {
@@ -79,20 +78,6 @@ export default {
       this.items = data.data
       this.next = data.next
     },
-    showErrorMessage (o) {
-      let text
-      let timeout
-      if (typeof o === 'string') {
-        text = o
-        timeout = 1000
-      } else if (typeof o === 'object') {
-        text = o.text || 'error'
-        timeout = o.timeout || 1000
-      }
-
-      const m = this.$message.error(text)
-      setTimeout(() => m.close(), timeout || 1000)
-    },
     resetResultList () {
       this.hideLoadMore()
       this.items = []
@@ -101,18 +86,18 @@ export default {
       this.$client.axios
         .get(this.next.url)
         .then(r => {
-          if (r.status == 200) {
+          if (r.status === 200) {
             this.updateSearchResults(r.data)
-          } else if (r.status == 204) {
+          } else if (r.status === 204) {
             this.hideLoadMore()
-            const m = this.$message({
+            this.$msg({
               type: 'info',
               message: '无更多内容',
               duration: 500
             })
           }
         }).catch(reason => {
-          const m = this.$message({
+          this.$msg({
             type: 'error',
             message: '无法获取内容',
             duration: 500

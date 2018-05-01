@@ -78,10 +78,13 @@ export default class {
   }
   getMostRecentPost (options) {
     options = options || {}
-    let params
-    if (options.size) {
-      params = { size: options.size }
-    }
+    const allowedParams = ['size', 'offset', 'userId']
+    let params = Object.keys(options)
+      .filter(k => allowedParams.indexOf(k) !== -1)
+      .reduce((obj, key) => {
+        obj[key] = options[key]
+        return obj
+      }, {})
     return this.axios.get('/posts', { params })
   }
   getAvatarUrl (avatar) {

@@ -26,6 +26,14 @@ export default {
       this.$router.push('register')
     },
     login () {
+      if (this.username.length === 0) {
+        this.$msg('用户名不能为空')
+        return
+      }
+      if (this.password.length === 0) {
+        this.$msg('密码不能为空')
+        return
+      }
       const loading = this.$loading()
       this.$client.login(this.username, this.password)
         .then(r => {
@@ -42,9 +50,11 @@ export default {
           }
         }, reason => {
           loading.close()
-          this.$logger.debug('login failed' + reason)
-          const error = this.$message.error('登陆失败，用户名或密码错误')
-          setTimeout(() => error.close(), 1000)
+          this.$msg({
+            message: '登陆失败，用户名或密码错误',
+            type: 'error',
+            duration: 1000
+          })
         }).then(() => {
           this.$router.push('/main')
         })

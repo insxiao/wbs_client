@@ -8,7 +8,8 @@ import NewPost from '@/components/NewPost'
 import Register from '@/components/Register'
 import BlogList from '@/components/BlogList'
 import Search from '@/components/Search'
-import ToggleGroup from '@/components/ToggleGroup'
+import UserHome from '@/components/UserHome'
+
 Vue.use(Router)
 
 export default new Router({
@@ -64,12 +65,11 @@ export default new Router({
       component: NewPost
     },
     {
-      path: '/toggle',
+      path: '/homepage',
       props: {
-        text: 'button',
-        active: false
+        userId: 1
       },
-      component: ToggleGroup
+      component: UserHome
     }
   ]
 })
