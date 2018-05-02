@@ -13,6 +13,7 @@ export default {
 @import '../css/common';
 
 .wb-round-button {
+  box-sizing: border-box;
   border: darken(@primary-color, 10%) solid 1px;
   background: @primary-color;
   padding: .2rem 1rem;

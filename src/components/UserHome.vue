@@ -1,11 +1,14 @@
 <template>
 <div class="wb-user-home">
   <div class="wb-header">
+    <div class="wb-header-settings">
+      <FontAwesomeIcon v-show="isCurrentUser" icon="cog" size="1x"></FontAwesomeIcon>
+    </div>
     <AvatarCircle class="wb-header-avatar"
       :url="avatarUrl"
       :size="96"/>
     <div class="wb-header-name"> {{ this.user.name || 'unknow' }} </div>
-    <ButtonRoundSmall class="wb-follow-button"> {{ followButtonLabel }} </ButtonRoundSmall>
+    <ButtonRoundSmall v-show="!isCurrentUser" class="wb-follow-button"> {{ followButtonLabel }} </ButtonRoundSmall>
   </div>
   <div class="wb-content">
     <SimpleList :items="items">
@@ -29,6 +32,7 @@ import AvatarCircle from './AvatarCircle'
 import ButtonRoundSmall from './ButtonRoundSmall'
 import PostItem from './PostItem'
 import ButtonLoadMore from './ButtonLoadMore'
+import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 
 export default {
   components: {
@@ -36,7 +40,8 @@ export default {
     AvatarCircle,
     ButtonRoundSmall,
     PostItem,
-    ButtonLoadMore
+    ButtonLoadMore,
+    FontAwesomeIcon
   },
   props: {
     userId: {
@@ -60,6 +65,11 @@ export default {
       } else {
         return this.$client.getAvatarUrl('80825813-d83f-4afe-80a5-f43f960de1cd')
       }
+    },
+    isCurrentUser () {
+      this.$logger.debug(this.$appState)
+      this.$logger.debug(this.userId)
+      return this.$appState.currentUser.id === this.userId
     }
   },
   created () {
@@ -71,8 +81,7 @@ export default {
     getUserInfo () {
       this.$client.getUserInfo({
         userId: this.userId
-      })
-      .then(r => {
+      }).then(r => {
         if (r.status === 200) {
           this.user = r.data
         } else {
@@ -94,7 +103,7 @@ export default {
           this.items = r.data.posts
           this.next = r.data.next
           if (r.data.posts.length > 0) {
-            this.hasMore = true;
+            this.hasMore = true
           }
         } else {
           throw new Error('response status is ' + r.status)
@@ -149,6 +158,7 @@ export default {
   margin-left: auto;
   margin-right: auto;
 }
+
 .wb-follow-button {
   display: block;
   margin-top: 1rem;
@@ -158,12 +168,26 @@ export default {
 
 .wb-header {
   background: lighten(@neon-green, 20%);
-  padding-top: 2rem;
+  padding-top: 1rem;
   padding-bottom: 1rem;
+  position: relative;
 }
 
 .wb-header-name {
   text-align: center;
+}
+
+.wb-header-settings {
+  color: @home-primary-color;
+  position: absolute;
+  margin: .5rem;
+  top: 0;
+  right: 0;
+  transition: .5s ease-in-out;
+  &:hover {
+    transform: rotate(180deg);
+    color: darken(@home-primary-color, 10%);
+  }
 }
 
 .wb-content-footer {

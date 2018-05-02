@@ -67,7 +67,7 @@ export default new Router({
     {
       path: '/homepage',
       props: {
-        userId: 1
+        userId: 2
       },
       component: UserHome
     }

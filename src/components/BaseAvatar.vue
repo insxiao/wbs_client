@@ -39,9 +39,11 @@ export default {
 <style lang="less" scoped>
   .base-avatar {
     overflow: hidden;
+    box-sizing: border-box;
   }
 
   .base-avatar-img {
+    box-sizing: border-box;
     margin-left: auto;
     margin-right: auto;
     max-width: 100%;

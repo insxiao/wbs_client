@@ -29,8 +29,9 @@ export default class {
         throw new Error('register info is undefined or null')
       }
 
-      const missingRequiredField = requiredFields.some(f => registerInfo[f] === undefined ||
-        registerInfo[f] === undefined)
+      const missingRequiredField = requiredFields
+        .some(f => registerInfo[f] === undefined ||
+          registerInfo[f] === undefined)
       if (missingRequiredField) {
         throw new Error('register missing required fields')
       }
