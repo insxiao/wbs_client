@@ -14,9 +14,9 @@ yarn-error.log*
 *.sln
 
 src/Debug.js
-test/
+test
 
-www/
-platforms/
+www
+platforms
 
 **.swp

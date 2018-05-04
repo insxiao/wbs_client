@@ -17,6 +17,7 @@
     "@fortawesome/fontawesome-free-solid": "^5.0.9",
     "@fortawesome/vue-fontawesome": "0.0.22",
     "axios": "^0.18.0",
+    "cordova-android": "^7.0.0",
     "cordova-browser": "^5.0.3",
     "cordova-plugin-whitelist": "1",
     "element-ui": "^2.2.2",
@@ -89,7 +90,7 @@
   ],
   "cordova": {
     "platforms": [
-      "browser"
+      "android"
     ],
     "plugins": {
       "cordova-plugin-whitelist": {}
