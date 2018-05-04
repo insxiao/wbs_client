@@ -4,10 +4,17 @@
       <div class="icon"></div>
       </div>
       <div class="field-set">
-        <input class="field" type="text" v-model="username" placeholder="username">
-        <input class="field" type="password" v-model="password" placeholder="password">
-        <button class="field btn-rnd" @click="login">登录</button>
-        <button class="field btn-rnd" @click="register">注册</button>
+        <v-text-field
+          name="input-10-1"
+          label="输入用户名"
+          v-model="username"
+        ></v-text-field>
+        <v-text-field
+          v-model="password"
+          type="password"
+          label="输入密码"></v-text-field>
+        <v-btn class="field btn-rnd" color="success" @click="login">登录</v-btn>
+        <v-btn class="field btn-rnd" color="info" @click="register">注册</v-btn>
       </div>
   </div>
 </template>
@@ -64,18 +71,18 @@ export default {
 </script>
 
 <style scoped lang="less">
-    @import url("../css/common.less");
-
     #container {
         width: 80%;
-        .auto-side-margin;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .icon-wrapper {
         padding: 2rem;
     }
     .icon {
-        .auto-side-margin;
+        margin-left: auto;
+        margin-right: auto;
         width: 128px;
         height: 128px;
     }
@@ -86,19 +93,16 @@ export default {
     }
 
     .field-set button {
-        .simple-button;
-        display: block;
         width: 100%;
-        height: 100%;
         &:first-of-type {
-            background-color: @main-color;
-            border-color: @second-color;
+            background-color: red;
+            border-color: gray;
         }
 
     }
 
     .field-set input {
-        .simple-input;
+
         width: 100%;
     }
 </style>

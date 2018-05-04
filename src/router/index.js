@@ -8,6 +8,7 @@ import NewPost from '@/components/NewPost'
 import Register from '@/components/Register'
 import BlogList from '@/components/BlogList'
 import Search from '@/components/Search'
+import PostItemDetail from '@/components/PostItemDetail'
 import UserHome from '@/components/UserHome'
 
 Vue.use(Router)
@@ -65,11 +66,14 @@ export default new Router({
       component: NewPost
     },
     {
-      path: '/homepage',
-      props: {
-        userId: 2
-      },
+      path: '/homepage/:userId',
+      props: true,
       component: UserHome
+    },
+    {
+      path: '/post/:postId',
+      props: true,
+      component: PostItemDetail
     }
   ]
 })

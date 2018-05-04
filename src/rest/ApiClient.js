@@ -1,5 +1,7 @@
 import axios from 'axios'
 import NavieCache from '../NaiveCache'
+import assert from 'assert'
+import CommentData from '../models/CommentData'
 
 const userCache = new NavieCache()
 
@@ -51,6 +53,10 @@ export default class {
     checkRequiredInfo()
     return this.axios.post('/users', registerInfo)
   }
+  /**
+  * get user info
+  *
+  */
   getUserInfo (options) {
     const key = options.userId.toString()
     if (userCache.has(key) && userCache.get(key)) {
@@ -77,6 +83,12 @@ export default class {
       timestamp: blog.timestamp
     })
   }
+  commentBlog (comment) {
+    assert(CommentData.is(comment), 'comment must be a CommentData')
+    return this
+      .axios
+      .post('/comments', comment)
+  }
   getMostRecentPost (options) {
     options = options || {}
     const allowedParams = ['size', 'offset', 'userId']
@@ -87,6 +99,12 @@ export default class {
         return obj
       }, {})
     return this.axios.get('/posts', { params })
+  }
+  getPost (options) {
+    if (!options.id) {
+      throw new Error('missing required arguments')
+    }
+    return this.axios.get('/posts/' + options.id)
   }
   getAvatarUrl (avatar) {
     let endpoint = this.endpoint
@@ -109,6 +127,9 @@ export default class {
     return this.axios.get('/search', {
       params
     })
+  }
+  uploadImage (formData) {
+    return this.axios.post('/formUpload', formData)
   }
   get userCache () {
     return userCache

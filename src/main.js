@@ -2,6 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
+import Vuetify from 'vuetify'
 import router from './router'
 
 import config from './config'
@@ -13,8 +14,9 @@ import { faSearch, faPlus, faCog } from '@fortawesome/fontawesome-free-solid'
 import MsgPlugin from './plugins/MsgPlugin'
 
 import 'element-ui/lib/theme-chalk/index.css'
-
-import './css/common.less'
+import 'vuetify/dist/vuetify.min.css'
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
+// import './css/common.less'
 
 // plugins
 import ClientPlugin from './plugins/ClientPlugin'
@@ -25,6 +27,7 @@ import { VuePlugin as AppState } from './StateManager'
 Vue.config.productionTip = false
 
 Vue.use(ElementUI)
+Vue.use(Vuetify)
 Vue.use(ClientPlugin, { endpoint: config.endpoint })
 Vue.use(LoggerPlugin)
 Vue.use(LocalStorageAccessPlugin)

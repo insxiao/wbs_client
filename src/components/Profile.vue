@@ -1,23 +1,39 @@
 <template>
-  <div class="list">
-      <div class="profile-list">
-          <ProfileListItem :key="idx" :item="item" v-for="(item, idx) in profileProps" />
-      </div>
+  <div class="wb-profile">
+    <UserItem @click-item="openUserHomepage" :item="$appState.currentUser" :id="-1"></UserItem>
+    <v-list>
+      <v-subheader>用户注册信息</v-subheader>
+
+      <v-list-tile v-for="(value, key) of userProperties" :key="key">
+        <v-list-tile-content>
+          {{key}}
+        </v-list-tile-content>
+        <v-list-tile-content class="align-end">
+          <template v-if="key === 'avatar'">
+            <v-avatar tile :size="32">
+              <img :src="avatarUrl" alt="">
+            </v-avatar>
+          </template>
+          <template v-else> {{ value }} </template>
+        </v-list-tile-content>
+      </v-list-tile>
+    </v-list>
+    <v-divider/>
     <div class="clear-data">
-      <button class="simple-button logout" @click="clearDataAndRestart">Log out</button>
+      <v-btn depressed block color="error" @click="clearDataAndRestart">Log out</v-btn>
     </div>
   </div>
 </template>
 
 <script>
 import ProfileListItem from './ProfileListItem'
-
+import UserItem from './UserItem'
 const localStorage = window.localStorage
 
 export default {
   data () {
     return {
-      profile_item_order: ['id', 'name', 'gender', 'email', 'birthday'],
+      profile_item_order: ['id', 'avatar', 'name', 'gender', 'email', 'birthday'],
       access_modifier: {
         id: {
           editable: false,
@@ -47,12 +63,23 @@ export default {
     currentUser () {
       return this.$appState.getCurrentUser()
     },
+    avatarUrl () {
+      return this.$client.getAvatarUrl(this.currentUser.avatar)
+    },
     profileProps () {
       console.debug(`this is userdata`, this.computedUserDate)
 
       return this.profile_item_order.map(key => Object.assign({
         name: key,
         value: this.currentUser[key] }, this.access_modifier[key]))
+    },
+    userProperties () {
+      return this.profile_item_order
+        .filter(key => this.currentUser[key])
+        .reduce((obj, key) => {
+          obj[key] = this.currentUser[key]
+          return obj
+        }, {})
     }
   },
   methods: {
@@ -60,11 +87,14 @@ export default {
       localStorage.clear()
       this.$router.replace('/login')
     },
-    getUser () {
-      return this.$appState.getCurrentUser()
+    openUserHomepage () {
+      this.$router.push('/homepage/' + this.$appState.currentUser.id)
     }
   },
-  components: { ProfileListItem }
+  components: {
+    ProfileListItem,
+    UserItem
+  }
 }
 </script>
 
@@ -84,9 +114,7 @@ export default {
   overflow-wrap: normal;
 }
 
-.logout {
+.wb-profile-logout {
   width:100%;
-  background: darkred;
-  padding: 0.5rem;
 }
 </style>

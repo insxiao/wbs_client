@@ -1,5 +1,6 @@
 export default class {
-  constructor (username, password, gender, email, birthday) {
+  constructor (username, password, gender, avatar, email, birthday) {
+    console.log(arguments)
     function requireNotUndefined (value) {
       if (value === undefined ||
         value === null ||
@@ -14,6 +15,10 @@ export default class {
     this.name = username
     this.password = password
     this.gender = gender
+
+    if (avatar !== undefined && avatar !== null) {
+      this.avatar = avatar
+    }
 
     if (email !== undefined && email !== null) {
       this.email = email

@@ -1,12 +1,28 @@
 <template>
-  <div class="item-container">
-    <div class="user" @click="$emit('clickAvatar', item.userId)">
-      <img class="avatar" :src="avatarUrl"/>
-      <div class="nick">{{ postOwner.name || 'username' }}</div>
+  <v-card>
+    <!-- main layout -->
+    <div row warp @click="$emit('click-avatar', item.userId)">
+      <v-card-title primary-title>
+        <v-avatar
+          size="32px"
+        >
+          <img v-if="avatarUrl != ''" :src="avatarUrl"/>
+          <v-icon v-else>person_outline</v-icon>
+        </v-avatar>
+        <span class="wb-post-username">
+          {{ user.name || 'username' }}
+        </span>
+      </v-card-title>
     </div>
-    <div class="content" @click="$emit('clickItem', id)"> {{ item.content }} </div>
-    <div class="timestamp"> {{ item.timestamp | transformISODate }} </div>
-  </div>
+    <v-card-text class="content" @click="$emit('click-item', id)">
+      {{ item.content }}
+    </v-card-text>
+    <v-footer
+      text-xs-right
+      class="timestamp">
+        <v-spacer></v-spacer>{{ item.timestamp | transformISODate }}
+    </v-footer>
+  </v-card>
 </template>
 
 <script>
@@ -14,13 +30,19 @@ export default {
   props: ['item', 'id'],
   data () {
     return {
-      avatarUrl: undefined,
-      postOwner: {}
+      user: {}
     }
   },
   computed: {
     now () {
       return new Date().toLocaleString()
+    },
+    avatarUrl () {
+      if (this.user.avatar) {
+        return this.$client.getAvatarUrl(this.user.avatar)
+      } else {
+        return ''
+      }
     }
   },
   filters: {
@@ -57,22 +79,21 @@ export default {
     }
   },
   watch: {
-    postOwner (newVal, oldVal) {
-      if (newVal.avatar !== undefined && newVal.avatar !== null) {
-        this.avatarUrl = this.$client.getAvatarUrl(newVal.avatar)
-      }
+    user (newVal, oldVal) {
     },
     avatarUrl (newVal, oldVal) {
       this.$logger.debug(`avatar url changed to ${newVal}`)
     }
   },
-  created () { },
+  created () {
+    this.$logger.debug(this.item)
+  },
   mounted () {
     this.$client.getUserInfo({ userId: this.item.userId })
       .then(r => {
         if (r.status === 200) {
-          this.postOwner = r.data
-          this.$logger.debug('fetch user info ' + this.postOwner.id, this.postOwner)
+          this.user = r.data
+          this.$logger.debug('fetch user info ' + this.user.id, this.user)
         } else {
           this.$logger.warn('failed to load post owener data')
         }
@@ -84,36 +105,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  @import url('../css/common.less');
 
   .mo {
     outline: none;
   }
 
-  .item-container {
-    // background: aqua;
-    border-bottom: @dark-grey solid 1px;
-    display: flex;
-    flex-direction: column;
-    padding: 8px 8px 8px 32px;
-  }
-
   @user-info-height: 24px;
-  .user {
-    position: relative;
-    margin-bottom: 8px;
-    .mo;
-  }
-
-  .avatar {
-    display: block;
-    position: absolute;
-    max-width: 24px;
-    max-height: 24px;
-    overflow: hidden;
-    left: -28px;
-    .mo;
-  }
 
   .nick {
     height: 24px;
@@ -121,24 +118,25 @@ export default {
   }
 
   .content {
-    height: 4rem;
+    height: 5rem;
     margin-bottom: 8px;
-    .mo;
     text-overflow: ellipsis;
     overflow: hidden;
   }
 
   .timestamp {
-    display: inline-block;
-    height: 1rem;
-    font-size: .8rem;
-    line-height: 1rem;
+    font-size: .5rem;
     text-align: right;
-    .mo;
   }
 
   .display-none {
     display: none;
+  }
+
+  .wb-post-username {
+    font-weight: bolder;
+    font-size: 1.2rem;
+    padding-left: 1rem;
   }
 
 </style>

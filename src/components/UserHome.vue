@@ -1,26 +1,40 @@
 <template>
 <div class="wb-user-home">
-  <div class="wb-header">
+  <v-snackbar :timeout="snackbar.timeout" top :value="snackbar.show" >
+    {{snackbar.message}}
+  </v-snackbar>
+  <v-card color="primary" class="wb-header">
     <div class="wb-header-settings">
-      <FontAwesomeIcon v-show="isCurrentUser" icon="cog" size="1x"></FontAwesomeIcon>
+      <v-icon v-show="isCurrentUser">settings</v-icon>
     </div>
-    <AvatarCircle class="wb-header-avatar"
-      :url="avatarUrl"
-      :size="96"/>
-    <div class="wb-header-name"> {{ this.user.name || 'unknow' }} </div>
-    <ButtonRoundSmall v-show="!isCurrentUser" class="wb-follow-button"> {{ followButtonLabel }} </ButtonRoundSmall>
-  </div>
+    <v-card-text>
+      <v-layout row justify-center>
+        <v-avatar style="border: pink solid 1px" text-xs-center class="mx-auto"
+          :size="96">
+            <img v-if="avatarUrl !== ''" :src="avatarUrl" alt="">
+            <v-icon color="secondary" v-else :size="64">person_outline</v-icon>
+        </v-avatar>
+      </v-layout>
+      <v-layout row justify-center>
+          <v-subheader class="text-md-center"> {{ this.user.name || 'unknow' }} </v-subheader>
+      </v-layout>
+      <v-layout row wrap>
+         <v-btn round depressed small color="" v-show="!isCurrentUser" class="mx-auto wb-follow-button"> {{ followButtonLabel }} </v-btn>
+       </v-layout>
+    </v-card-text>
+  </v-card>
   <div class="wb-content">
     <SimpleList :items="items">
       <PostItem
         slot-scope="{ item, index }"
         :item="item"
         :id="index"></PostItem>
-      <ButtonLoadMore
+      <v-btn
+        flat
+        block
         v-show="hasMore"
-        class="wb-content-footer"
         @click="loadMore()"
-        slot="footer">Load More</ButtonLoadMore>
+        slot="footer">Load More<v-icon>refresh</v-icon></v-btn>
     </SimpleList>
   </div>
 </div>
@@ -45,7 +59,7 @@ export default {
   },
   props: {
     userId: {
-      type: Number,
+      type: [Number, String],
       required: true
     }
   },
@@ -55,7 +69,12 @@ export default {
       hasMore: false,
       items: [],
       user: {},
-      next: {}
+      next: {},
+      snackbar: {
+        messsage: '',
+        show: false,
+        timeout: 1000
+      }
     }
   },
   computed: {
@@ -63,21 +82,33 @@ export default {
       if (this.user.avatar) {
         return this.$client.getAvatarUrl(this.user.avatar)
       } else {
-        return this.$client.getAvatarUrl('80825813-d83f-4afe-80a5-f43f960de1cd')
+        return ''
       }
     },
     isCurrentUser () {
       this.$logger.debug(this.$appState)
       this.$logger.debug(this.userId)
-      return this.$appState.currentUser.id === this.userId
+      return this.$appState.currentUser.id.toString() === this.userId.toString()
     }
   },
   created () {
     this.$logger.debug('CREATED load user info')
+    this.$logger.debug('props of user home ', this.userId)
     this.getUserInfo()
     this.getBlogList()
   },
   methods: {
+    showSnack (message) {
+      if (typeof message === 'string') {
+        this.snackbar.message = message
+      } else if (typeof message === 'object') {
+        this.snackbar.message = message.message
+      } else {
+        this.snackbar.message = '数据错误'
+      }
+      this.snackbar.show = true
+      setTimeout(() => { this.snackbar.show = false }, this.snackbar.timeout)
+    },
     getUserInfo () {
       this.$client.getUserInfo({
         userId: this.userId
@@ -88,16 +119,13 @@ export default {
           throw new Error('cannot get user info')
         }
       }).catch(reason => {
-        this.$msg({
-          message: '无法获取用户信息',
-          type: 'error'
-        })
+        this.showSnack('无法获取用户信息')
       })
     },
     getBlogList () {
       this.$client.getMostRecentPost({
         size: 10,
-        userId: this.user.id
+        userId: this.userId
       }).then(r => {
         if (r.status === 200) {
           this.items = r.data.posts
@@ -110,7 +138,7 @@ export default {
         }
       }).catch(reason => {
         this.$logger.debug(reason)
-        this.$msg({
+        this.showSnack({
           message: '无法载入数据',
           type: 'error'
         })
@@ -128,7 +156,7 @@ export default {
               this.next = r.data.next
             } else {
               this.hasMore = false
-              this.$msg({
+              this.showSnack({
                 message: '无更多数据',
                 type: 'warning'
               })
@@ -139,7 +167,7 @@ export default {
         })
         .catch(reason => {
           this.$logger.debug(reason)
-          this.$msg({
+          this.showSnack({
             message: '无法载入数据',
             type: 'error'
           })
@@ -150,47 +178,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import '../css/common';
-@home-primary-color: darken(@primary-color, 10%);
-
-.wb-header-avatar {
-  border: @home-primary-color solid 3px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.wb-follow-button {
-  display: block;
-  margin-top: 1rem;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.wb-header {
-  background: lighten(@neon-green, 20%);
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  position: relative;
-}
-
-.wb-header-name {
+.wb-home-name {
   text-align: center;
 }
-
 .wb-header-settings {
-  color: @home-primary-color;
-  position: absolute;
-  margin: .5rem;
-  top: 0;
-  right: 0;
-  transition: .5s ease-in-out;
-  &:hover {
-    transform: rotate(180deg);
-    color: darken(@home-primary-color, 10%);
-  }
-}
-
-.wb-content-footer {
-  width: 100%;
+  text-align: right;
 }
 </style>

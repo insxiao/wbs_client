@@ -1,13 +1,29 @@
 <template>
-    <simple-list class="container" ref="simpleList" :items="items">
-      <template slot-scope="{ item, index }">
-        <post-item :item="item" :id="item.id"></post-item>
+    <v-list class="container" ref="simpleList" :items="items">
+      <template v-for="(item, idx) in items">
+        <post-item
+          @click-avatar="openUserHomepage"
+          @click-item="openPostDetail"
+          :item="item"
+          :id="item.id"
+          :key="idx"></post-item>
       </template>
 
-      <div slot="footer" :style="footerStyle" :disabled="loadMoreDisabled" id="load-more" @click="loadMore">
+      <v-btn block flat v-show="hasMore" :height="'128px'" :disabled="loadMoreDisabled" id="load-more" @click="loadMore">
         <p>{{ nextButtonText}}</p>
-      </div>
-    </simple-list>
+      </v-btn>
+      <v-btn
+        class="wb-fixed-button" fab
+        bottom
+        right
+        small
+        fixed
+        color="pink"
+        @click="newPost"
+        >
+          <v-icon style="line-height:40px" center>add</v-icon>
+        </v-btn>
+    </v-list>
 </template>
 
 <script>
@@ -28,6 +44,9 @@ export default {
     }
   },
   methods: {
+    newPost () {
+      this.$router.push('/new')
+    },
     disableLoadMore () {
       this.nextButtonText = 'no more data'
       this.loadMoreDisabled = true
@@ -53,7 +72,21 @@ export default {
               this.nextURL = r.data.next.url
             }
           }
-        }).finally(() => this.$nextTick(() => loading.close()))
+        }).finally(() => loading.close())
+    },
+    openUserHomepage (userId) {
+      this.$logger.debug('open homepage of ', userId)
+      this.$router.push({
+        path: '/homepage/' + userId
+      })
+    },
+    openPostDetail (id) {
+      if (id !== undefined && id !== null) {
+        this.$router.push('/post/' + id)
+      }
+    },
+    noMoreData () {
+
     }
   },
   computed: { },
@@ -91,11 +124,9 @@ export default {
   }
 
   #load-more {
-    font-size: 1rem;
-    padding: 1rem;
-    width: 100%;
-    & p {
-      text-align: center;
-    }
+  }
+
+  .wb-fixed-button {
+    bottom: 64px;
   }
 </style>

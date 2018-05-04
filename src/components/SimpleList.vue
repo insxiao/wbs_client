@@ -1,13 +1,11 @@
 <template>
-  <ol class="list-container">
-    <li :key="index" v-for="(item, index) in items">
+  <v-list class="list-container">
+    <v-card :key="index" v-for="(item, index) in items">
       <slot :item="item" :index="index">
       </slot>
-    </li>
-    <li :class="{ 'display-none': fHideFooter }">
-      <slot name="footer" class="list-footer"></slot>
-    </li>
-  </ol>
+    </v-card>
+    <slot name="footer" class="list-footer"></slot>
+  </v-list>
 </template>
 
 <script>
