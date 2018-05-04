@@ -1,10 +1,13 @@
 <template>
-  <div id="app">
-    <router-view/>
-  </div>
+  <v-app  id="app">
+    <div>
+      <router-view/>
+    </div>
+  </v-app>
 </template>
 
 <script>
+
 export default {
   name: 'App'
 }
@@ -12,8 +15,8 @@ export default {
 
 <style>
   * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
+  }
+  #app {
   }
 </style>

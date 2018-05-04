@@ -4,17 +4,22 @@
       <div class="icon"></div>
       </div>
       <div class="field-set">
-        <input class="field" type="text" v-model="username" placeholder="username">
-        <input class="field" type="password" v-model="password" placeholder="password">
-        <button class="field btn-rnd" @click="login">登录</button>
-        <button class="field btn-rnd" @click="register">注册</button>
+        <v-text-field
+          name="input-10-1"
+          label="输入用户名"
+          v-model="username"
+        ></v-text-field>
+        <v-text-field
+          v-model="password"
+          type="password"
+          label="输入密码"></v-text-field>
+        <v-btn class="field btn-rnd" color="success" @click="login">登录</v-btn>
+        <v-btn class="field btn-rnd" color="info" @click="register">注册</v-btn>
       </div>
   </div>
 </template>
 
 <script>
-import api from '../api'
-
 export default {
   data () {
     return {
@@ -24,23 +29,41 @@ export default {
   },
   methods: {
     register () {
-      console.log('click register')
+      this.$logger.log('click register')
       this.$router.push('register')
     },
-    echo () {
-      console.log('hello')
-    },
     login () {
-      const router = this.$router
-      api.login(this.username, this.password)
+      if (this.username.length === 0) {
+        this.$msg('用户名不能为空')
+        return
+      }
+      if (this.password.length === 0) {
+        this.$msg('密码不能为空')
+        return
+      }
+      const loading = this.$loading()
+      this.$client.login(this.username, this.password)
         .then(r => {
-          if (r.status === '200') {
-            router.push('app')
+          loading.close()
+          if (r.status === 200) {
+            this.$logger.debug('response data ' + r.data)
+
+            this.$appState.currentUser = r.data
           }
-          console.debug(r)
-        }).catch(reason => {
-          console.log('login failed')
-          console.log(reason)
+          this.$logger.debug('response object ' + r)
+          return {
+            status: 'Ok',
+            statusCode: 200
+          }
+        }, reason => {
+          loading.close()
+          this.$msg({
+            message: '登陆失败，用户名或密码错误',
+            type: 'error',
+            duration: 1000
+          })
+        }).then(() => {
+          this.$router.push('/main')
         })
     }
   }
@@ -48,18 +71,18 @@ export default {
 </script>
 
 <style scoped lang="less">
-    @import url("../css/common.less");
-
     #container {
         width: 80%;
-        .auto-side-margin;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .icon-wrapper {
         padding: 2rem;
     }
     .icon {
-        .auto-side-margin;
+        margin-left: auto;
+        margin-right: auto;
         width: 128px;
         height: 128px;
     }
@@ -70,19 +93,16 @@ export default {
     }
 
     .field-set button {
-        .simple-button;
-        display: block;
         width: 100%;
-        height: 100%;
         &:first-of-type {
-            background-color: @main-color;
-            border-color: @second-color;
+            background-color: red;
+            border-color: gray;
         }
 
     }
 
     .field-set input {
-        .simple-input;
+
         width: 100%;
     }
 </style>

@@ -8,14 +8,13 @@
 
 @primary-color: @neon-blue;
 
-* {
+div,ol,ul,li,p,img,article,header,footer,dl,dd {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  background: @light-grey;
 }
 
 .active-panel {
@@ -78,11 +77,20 @@ body {
 
 .scroll-list-box {
   .simple-list-box;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: auto;
 }
 
 .simple-list-item {
   width: 100%;
   margin-bottom: 1rem;
+}
+
+
+.wb-message {
+  top: 0px;
+}
+
+.debug-outline {
+  outline: darken(@neon-green, 10%) dotted 3px;
 }

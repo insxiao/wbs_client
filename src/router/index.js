@@ -5,8 +5,11 @@ import AppMain from '@/components/Main'
 import Profile from '@/components/Profile'
 import TODO from '@/components/Todo'
 import NewPost from '@/components/NewPost'
-import PostItem from '@/components/PostItem'
 import Register from '@/components/Register'
+import BlogList from '@/components/BlogList'
+import Search from '@/components/Search'
+import PostItemDetail from '@/components/PostItemDetail'
+import UserHome from '@/components/UserHome'
 
 Vue.use(Router)
 
@@ -37,7 +40,7 @@ export default new Router({
         {
           name: 'news',
           path: 'news',
-          component: TODO
+          component: BlogList
         },
         {
           name: 'stars',
@@ -47,9 +50,7 @@ export default new Router({
         {
           name: 'search',
           path: 'search',
-          components: {
-            default: TODO
-          }
+          component: Search
         },
         {
           name: 'profile',
@@ -61,23 +62,18 @@ export default new Router({
       ]
     },
     {
-      path: '/profile',
-      props: {
-        userdata: null
-      },
-      component: Profile
-    },
-    {
-      path: '/todo',
-      component: TODO
-    },
-    {
       path: '/new',
       component: NewPost
     },
     {
-      path: '/item',
-      component: PostItem
+      path: '/homepage/:userId',
+      props: true,
+      component: UserHome
+    },
+    {
+      path: '/post/:postId',
+      props: true,
+      component: PostItemDetail
     }
   ]
 })

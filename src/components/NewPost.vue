@@ -2,22 +2,63 @@
   <div class="comp">
     <textarea name="post" id="post" placeholder="输入新内容" v-model="content">
     </textarea>
-    <button class="simple-button submit" @click="post">发送</button>
+    <button ref="send" class="simple-button submit" @click="post">发送</button>
     <button class="simple-button cancel" @click="$router.back()">取消</button>
   </div>
 </template>
 
 <script>
+import PostData from '../models/PostData'
 export default {
   data () {
     return {
-      content: ''
+      content: '',
+      loading: true
     }
   },
   methods: {
+    disableSendButton () {
+      this.$refs.send.disabled = true
+    },
+    enableSendButton () {
+      if (!this.$refs.send) return
+      this.$refs.send.disabled = false
+    },
     post () {
-      console.log('post data', this.content)
+      const loading = this.$loading()
+      this.$logger.debug('click post')
+      this.disableSendButton()
+      const data = new PostData(this.content, this.$appState.currentUser.id)
+      this.$logger.debug('current user is', this.$appState.currentUser)
+
+      this.$logger.debug(data)
+
+      this.$client.postBlog(data).then(delay(1)).then(r => {
+        this.$msg({
+          type: 'success',
+          message: '发送成功'
+        })
+        this.$router.back()
+      },
+      r => {
+        loading.close()
+        this.enableSendButton()
+        this.$msg({ message: '发送失败', type: 'error' })
+      }).finally(() => {
+        this.enableSendButton()
+        loading.close()
+      })
     }
+  }
+}
+
+function delay (seconds) {
+  return function (value) {
+    return new Promise((resolve, reject) => {
+      setTimeout(function () {
+        resolve(value)
+      }, seconds * 1000)
+    })
   }
 }
 </script>

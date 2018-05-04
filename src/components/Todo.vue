@@ -14,10 +14,13 @@ export default {
       }
 
       this.$router.go(-1)
+    },
+    test () {
+
     }
   },
   created () {
-    console.log('create todo')
+    this.$logger.debug('create todo')
   }
 }
 </script>
