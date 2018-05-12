@@ -1,12 +1,10 @@
 <template>
 <div class="wb-user-home">
-  <v-snackbar :timeout="snackbar.timeout" top :value="snackbar.show" >
-    {{snackbar.message}}
+  <v-snackbar :timeout="snack.timeout" top :value="snack.show" >
+    {{snack.message}}
   </v-snackbar>
   <v-card color="primary" class="wb-header">
-    <div class="wb-header-settings">
-      <v-icon v-show="isCurrentUser">settings</v-icon>
-    </div>
+    <v-icon class="wb-header-settings" small @click="gotoProfile" v-show="isCurrentUser">settings</v-icon>
     <v-card-text>
       <v-layout row justify-center>
         <v-avatar style="border: pink solid 1px" text-xs-center class="mx-auto"
@@ -16,17 +14,32 @@
         </v-avatar>
       </v-layout>
       <v-layout row justify-center>
-          <v-subheader class="text-md-center"> {{ this.user.name || 'unknow' }} </v-subheader>
+          <v-subheader class="text-md-center"> {{ user.name || 'unknow' }} </v-subheader>
       </v-layout>
-      <v-layout row wrap>
-         <v-btn round depressed small color="" v-show="!isCurrentUser" class="mx-auto wb-follow-button"> {{ followButtonLabel }} </v-btn>
+      <v-layout v-show="!isCurrentUser" row wrap>
+         <v-btn round
+                @click="follow"
+                :loading="followLoading"
+                depressed
+                small
+                v-if="!followed"
+                class="mx-auto wb-follow-button"> 关注 </v-btn>
+        <v-btn
+          @click="unfollow"
+          :loading="followLoading"
+          round
+          small
+          class="mx-auto"
+          v-else>已关注</v-btn>
        </v-layout>
     </v-card-text>
   </v-card>
   <div class="wb-content">
     <SimpleList :items="items">
+
       <PostItem
         slot-scope="{ item, index }"
+        @click-item="openPostDetail"
         :item="item"
         :id="index"></PostItem>
       <v-btn
@@ -35,6 +48,9 @@
         v-show="hasMore"
         @click="loadMore()"
         slot="footer">Load More<v-icon>refresh</v-icon></v-btn>
+      <v-list-tile v-show="items === undefined || items === null || items.length === 0" slot="empty">
+        <v-list-tile-content text-xs-center>No Content</v-list-tile-content>
+      </v-list-tile>
     </SimpleList>
   </div>
 </div>
@@ -70,11 +86,13 @@ export default {
       items: [],
       user: {},
       next: {},
-      snackbar: {
+      snack: {
         messsage: '',
         show: false,
         timeout: 1000
-      }
+      },
+      followed: false,
+      followLoading: false
     }
   },
   computed: {
@@ -98,16 +116,60 @@ export default {
     this.getBlogList()
   },
   methods: {
+    follow () {
+      const followerId = this.$appState.currentUser.id
+      const userId = this.user.id
+      this.followLoading = true
+      this.$client
+        .follow({ userId, followerId })
+        .then(resp => {
+          if (resp.status === 200) {
+            this.refreshFollowedStatus()
+          }
+        },
+        reason => {
+        }).finally(() => { this.followLoading = false })
+    },
+    unfollow () {
+      const userId = this.user.id
+      this.followLoading = true
+      this.$client
+        .unfollow({ userId })
+        .then(resp => {
+          if (resp.status === 200) {
+            this.refreshFollowedStatus()
+          }
+        }).finally(() => {
+          this.followLoading = false
+        })
+    },
+    refreshFollowedStatus () {
+      const userId = this.user.id
+      this.$client.getFollowedUser({ userId: userId })
+        .then(resp => {
+          if (resp.status === 200) {
+            this.followed = true
+          } if (resp.status === 204) {
+            this.followed = false
+          }
+        })
+    },
+    openPostDetail (postId) {
+      this.$router.push('/post/' + postId)
+    },
+    gotoProfile () {
+      this.$router.push('/main/profile')
+    },
     showSnack (message) {
       if (typeof message === 'string') {
-        this.snackbar.message = message
+        this.snack.message = message
       } else if (typeof message === 'object') {
-        this.snackbar.message = message.message
+        this.snack.message = message.message
       } else {
-        this.snackbar.message = '数据错误'
+        this.snack.message = '数据错误'
       }
-      this.snackbar.show = true
-      setTimeout(() => { this.snackbar.show = false }, this.snackbar.timeout)
+      this.snack.show = true
+      setTimeout(() => { this.snack.show = false }, this.snack.timeout)
     },
     getUserInfo () {
       this.$client.getUserInfo({
@@ -173,15 +235,25 @@ export default {
           })
         })
     }
+  },
+  watch: {
+    user (newVal, oldVal) {
+      this.refreshFollowedStatus()
+    }
   }
 }
 </script>
 
 <style lang="less" scoped>
+.wb-header {
+  position: relative;
+}
+
 .wb-home-name {
   text-align: center;
 }
 .wb-header-settings {
-  text-align: right;
+  position: relative;
+  left: 94%;
 }
 </style>

@@ -13,7 +13,10 @@ export default class {
     }
     this.axios = axios.create({
       baseURL: endpoint,
-      withCredentials: true
+      withCredentials: true,
+      headers: {
+        'X-Requested-With': 'V'
+      }
     })
   }
   login (username, password) {
@@ -91,7 +94,7 @@ export default class {
   }
   getMostRecentPost (options) {
     options = options || {}
-    const allowedParams = ['size', 'offset', 'userId']
+    const allowedParams = ['size', 'offset', 'userId', 'followerId']
     let params = Object.keys(options)
       .filter(k => allowedParams.indexOf(k) !== -1)
       .reduce((obj, key) => {
@@ -131,6 +134,46 @@ export default class {
   uploadImage (formData) {
     return this.axios.post('/formUpload', formData)
   }
+
+  /**
+   * @param success called if success
+   * @param failure called is failed
+   * @returns {*}
+   */
+  getFollowedUsers (success, failure) {
+    return this
+      .axios
+      .get('/follows')
+      .then(r => {
+        if (typeof success === 'function') {
+          success(r)
+        }
+        return Promise.resolve(r)
+      }).catch(reason => {
+        if (typeof failure === 'function') {
+          failure(reason)
+        }
+        return Promise.reject(reason)
+      })
+  }
+
+  getFollowedUser ({ userId }) {
+    return this.axios.get('/follows/' + userId)
+  }
+
+  follow ({ userId }) {
+    console.log('follow with', arguments)
+    return this.axios.post('/follows', {
+      userId
+    })
+  }
+
+  unfollow ({ userId }) {
+    return this.axios.delete('/follows', {
+      data: { userId }
+    })
+  }
+
   get userCache () {
     return userCache
   }

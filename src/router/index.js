@@ -3,18 +3,23 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import AppMain from '@/components/Main'
 import Profile from '@/components/Profile'
-import TODO from '@/components/Todo'
-import NewPost from '@/components/NewPost'
+import NewPostPage from '@/components/NewPostPage'
 import Register from '@/components/Register'
 import BlogList from '@/components/BlogList'
 import Search from '@/components/Search'
 import PostItemDetail from '@/components/PostItemDetail'
 import UserHome from '@/components/UserHome'
+import Follow from '@/components/Follow'
+import FollowUsers from '@/components/FollowUsers'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/follow',
+      component: FollowUsers
+    },
     {
       path: '/',
       redirect: '/main'
@@ -45,7 +50,7 @@ export default new Router({
         {
           name: 'stars',
           path: 'stars',
-          component: TODO
+          component: Follow
         },
         {
           name: 'search',
@@ -63,7 +68,7 @@ export default new Router({
     },
     {
       path: '/new',
-      component: NewPost
+      component: NewPostPage
     },
     {
       path: '/homepage/:userId',
