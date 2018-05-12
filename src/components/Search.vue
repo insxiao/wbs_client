@@ -1,21 +1,36 @@
 <template>
   <div class="search-container">
+    <v-snackbar
+      top
+      v-model="snack.show"
+    >
+      {{snack.message}}
+      <v-btn flat color="primary" @click.native="snack.show = false">Close</v-btn>
+    </v-snackbar>
     <div class="search-box">
-      <input class="simple-input" v-model="text" type="text" name="search-text">
-      <div class="search-button" @click="search">
-        <font-awesome-icon id="search-icon" icon="search" color="lightblue" size="2x"/>
-      </div>
+    <v-layout row>
+      <v-flex xs12>
+        <v-text-field flat append-icon="search" :append-icon-cb="search" v-model="text" solo type="text" name="search-text">
+        </v-text-field>
+      </v-flex>
+      </v-layout>
     </div>
     <toggle-group @updated="changeType" :items="toggleItems"></toggle-group>
     <simple-list ref="searchResultList" class="result-list" :items="items">
       <template name="header">
       </template>
       <!-- <post-item slot-scope="{ item, index }" :item="item" :id="item.id"></post-item> -->
-      <component :is="type" slot-scope="{ item, index }" :item="item" :id="item.id"></component>
+      <component :is="type"
+                 @click-avatar="openUserHomepage"
+                 @click-item="openPostDetail"
+                 @click-user-item="openUserHomepage"
+                 slot-scope="{ item, index }"
+                 :item="item"
+                 :id="item.id"></component>
 
-        <div @click="loadMore()" slot="footer" class="load-more">
-          <p>{{ footerText }}</p>
-        </div>
+        <v-list-tile v-show="hasMore" slot="footer" class="load-more">
+          <v-btn @click="loadMore()" block flat>{{ footerText }}</v-btn>
+        </v-list-tile>
 
     </simple-list>
   </div>
@@ -35,13 +50,24 @@ export default {
       items: [],
       type: 'post',
       footerText: 'load more',
-      next: {}
+      next: {},
+      hasMore: false,
+      snack: {
+        message: '',
+        show: false
+      }
     }
   },
   methods: {
+    openUserHomepage (userId) {
+      this.$router.push('/homepage/' + userId.toString())
+    },
+    openPostDetail (postId) {
+      this.$router.push('/post/' + postId.toString())
+    },
     search () {
       if (!this.text || this.text.length === 0) {
-        this.$msg({
+        this.showSnack({
           message: '请输入搜索内容', type: 'warning'
         })
         return
@@ -56,11 +82,15 @@ export default {
           this.setSearchResults(r.data)
           this.showLoadMore()
         } else if (r.status === 204) {
-          this.$msg({ message: '无内容', type: 'warning' })
+          this.showSnack({ message: '无内容', type: 'warning' })
         }
       }).catch(reason => {
-        this.$msg({ message: '错误：无法获取数据', type: 'error' })
+        this.showSnack({ message: '错误：无法获取数据', type: 'error' })
       }).finally(() => loading.close())
+    },
+    showSnack (message) {
+      this.snack.message = message.message || message
+      this.snack.show = true
     },
     changeType (type) {
       this.type = type
@@ -90,14 +120,14 @@ export default {
             this.updateSearchResults(r.data)
           } else if (r.status === 204) {
             this.hideLoadMore()
-            this.$msg({
+            this.showSnack({
               type: 'info',
               message: '无更多内容',
               duration: 500
             })
           }
         }).catch(reason => {
-          this.$msg({
+          this.showSnack({
             type: 'error',
             message: '无法获取内容',
             duration: 500
@@ -105,10 +135,10 @@ export default {
         })
     },
     showLoadMore () {
-      this.$refs.searchResultList.showFooter()
+      this.hasMore = true
     },
     hideLoadMore () {
-      this.$refs.searchResultList.hideFooter()
+      this.hasMore = false
     }
   },
   mounted () {

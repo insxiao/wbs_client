@@ -15,7 +15,7 @@ export default {
     comment: {
       type: Object,
       validator (comment) {
-        const required = ['content', 'userId', 'postId']
+        const required = ['content', 'userId', 'blogId']
         return required.every(key =>
           comment.hasOwnProperty(key))
       }

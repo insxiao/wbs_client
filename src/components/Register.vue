@@ -1,5 +1,6 @@
 <template>
     <v-dialog :value="true" fullscreen>
+      <DialogLoading :value="showAvatarUpload"/>
       <v-card>
         <v-card-title style="text-align: center" primary-title>
           <v-avatar slot="activator" class="wb-register-avatar" :size="64"  @click="$refs.filePicker.click()">
@@ -14,13 +15,13 @@
             label="用户名"
             v-model.trim="username"
             id="username"
-            :rules="rules.name"
+            :rules="commonRules.name"
           ></v-text-field>
           <v-text-field
             name="password"
             label="密码"
             v-model.trim="password"
-            :rules="rules.password"
+            :rules="commonRules.password"
             type="password"
             id="password"
           ></v-text-field>
@@ -71,9 +72,12 @@
 <script>
 import RegisterData from '../models/RegisterData'
 import DialogAvatarUpload from './DialogAvatarUpload'
+import DialogLoading from './DialogLoading'
+import commonRules from '../Rules'
 
 export default {
   components: {
+    DialogLoading,
     DialogAvatarUpload
   },
   data () {
@@ -102,15 +106,8 @@ export default {
           value: 'F'
         }
       ],
+      commonRules,
       rules: {
-        name: [
-          n => (n !== undefined && n.length > 0) || '用户名不能为空',
-          n => n.length > 2 || '用户名长度必须大于2'
-        ],
-        password: [
-          p => (p.length > 0) || '密码不能为空',
-          p => (p.length >= 6) || '密码不能少于六位'
-        ],
         repeatPassword: [
           p => (p.length > 0) || '密码不能为空',
           p => (p.length >= 6) || '密码不能少于六位',
@@ -135,6 +132,12 @@ export default {
     }
   },
   methods: {
+    showUploading () {
+      this.showAvatarUpload = true
+    },
+    hideUploading () {
+      this.showAvatarUpload = false
+    },
     fileSelected () {
       const inp = this.$refs.filePicker
       this.$logger.debug('this should be logged')
@@ -142,6 +145,7 @@ export default {
         const formData = new FormData()
         formData.append('image', inp.files[0])
         this.$logger.debug(formData)
+        this.showAvatarUpload = true
         this.$client.uploadImage(formData)
           .then(r => {
             if (r.status === 200) {
@@ -149,6 +153,8 @@ export default {
             } else {
               this.$logger.debug(r)
             }
+          }).finally(() => {
+            this.showAvatarUpload = false
           })
       }
     },

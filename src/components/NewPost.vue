@@ -1,53 +1,77 @@
 <template>
-  <div class="comp">
-    <textarea name="post" id="post" placeholder="输入新内容" v-model="content">
-    </textarea>
-    <button ref="send" class="simple-button submit" @click="post">发送</button>
-    <button class="simple-button cancel" @click="$router.back()">取消</button>
-  </div>
+  <v-dialog persistent v-bind="$attrs">
+    <v-card>
+      <v-card-text>
+        <v-text-field
+          textarea
+          name="post"
+          id="post"
+          placeholder="输入新内容"
+          :rules="rules"
+          v-model="content">
+        </v-text-field>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn
+          :disabled="content.length === 0"
+          flat
+          ref="send"
+          color="orange"
+          :loading="posting"
+          @click="post">发送</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn
+          :disabled="posting"
+          flat
+          color="orange"
+          @click="$emit('cancel')">取消</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
 import PostData from '../models/PostData'
 export default {
+  inheritAttrs: false,
+
   data () {
     return {
       content: '',
-      loading: true
+      posting: false,
+      sendDisabled: false,
+      rules: [
+        v => v.length > 0 || '内容不能为空'
+      ]
     }
   },
   methods: {
-    disableSendButton () {
-      this.$refs.send.disabled = true
-    },
-    enableSendButton () {
-      if (!this.$refs.send) return
-      this.$refs.send.disabled = false
-    },
     post () {
-      const loading = this.$loading()
       this.$logger.debug('click post')
-      this.disableSendButton()
       const data = new PostData(this.content, this.$appState.currentUser.id)
       this.$logger.debug('current user is', this.$appState.currentUser)
-
       this.$logger.debug(data)
+
+      this.posting = true
 
       this.$client.postBlog(data).then(delay(1)).then(r => {
         this.$msg({
           type: 'success',
           message: '发送成功'
         })
-        this.$router.back()
+        this.$emit('success')
       },
       r => {
-        loading.close()
-        this.enableSendButton()
         this.$msg({ message: '发送失败', type: 'error' })
+        this.$emit('error')
       }).finally(() => {
-        this.enableSendButton()
-        loading.close()
+        this.posting = false
       })
+    }
+  },
+  watch: {
+    posting (newVal, oldVal) {
+      this.$logger.debug('posting changed ', oldVal, newVal)
     }
   }
 }
@@ -64,53 +88,4 @@ function delay (seconds) {
 </script>
 
 <style lang="less" scoped>
-  @import url('../css/common.less');
-  .comp {
-    font-size: 2rem;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(200, 300, 400, 0.5);
-    display: flex;
-    flex-direction: column;
-  }
-
-  #post {
-    width: 100vw;
-    height: 50vh;
-    flex-grow: 1;
-    resize: none;
-    border-top: none;
-    border-left: none;
-    border-right: none;
-
-    &:active {
-      outline: none;
-    }
-
-    &:focus {
-      outline: none;
-    }
-  }
-
-  .comp .submit {
-    text-transform: uppercase;
-    &:active {
-      transition: border ease-in-out 100ms;
-      border: aqua solid 5px;
-      border-radius: 5px;
-    }
-  }
-
-  .simple-button {
-    background: white;
-    outline: none;
-    border: transparent solid 5px;
-    border-radius:5px;
-    display: block;
-    flex-grow: 0;
-  }
-
-  .simple-button.submit {
-    background: @neon-green;
-  }
 </style>

@@ -11,6 +11,9 @@ export default {
     if (installed) return
 
     const client = new ApiClient(options.endpoint)
+    /**
+     * @type {ApiClient}
+     */
     Vue.prototype.$client = client
     Vue.client = client
 

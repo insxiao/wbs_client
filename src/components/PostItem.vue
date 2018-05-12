@@ -1,26 +1,24 @@
 <template>
   <v-card>
     <!-- main layout -->
-    <div row warp @click="$emit('click-avatar', item.userId)">
-      <v-card-title primary-title>
-        <v-avatar
-          size="32px"
-        >
-          <img v-if="avatarUrl != ''" :src="avatarUrl"/>
-          <v-icon v-else>person_outline</v-icon>
-        </v-avatar>
-        <span class="wb-post-username">
+    <v-card-title primary-title  @click="$emit('click-avatar', item.userId)">
+      <v-avatar
+        size="32px"
+      >
+        <img v-if="avatarUrl !== ''" :src="avatarUrl"/>
+        <v-icon v-else>person_outline</v-icon>
+      </v-avatar>
+      <span>
           {{ user.name || 'username' }}
         </span>
-      </v-card-title>
-    </div>
-    <v-card-text class="content" @click="$emit('click-item', id)">
+    </v-card-title>
+    <v-card-text class="content" @click="$emit('click-item', item.id)">
       {{ item.content }}
     </v-card-text>
     <v-footer
       text-xs-right
       class="timestamp">
-        <v-spacer></v-spacer>{{ item.timestamp | transformISODate }}
+      <v-spacer></v-spacer>{{ item.timestamp | transformISODate }}
     </v-footer>
   </v-card>
 </template>
@@ -79,11 +77,6 @@ export default {
     }
   },
   watch: {
-    user (newVal, oldVal) {
-    },
-    avatarUrl (newVal, oldVal) {
-      this.$logger.debug(`avatar url changed to ${newVal}`)
-    }
   },
   created () {
     this.$logger.debug(this.item)
@@ -105,38 +98,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
-  .mo {
-    outline: none;
-  }
-
-  @user-info-height: 24px;
-
-  .nick {
-    height: 24px;
-    line-height: 24px;
-  }
-
-  .content {
-    height: 5rem;
-    margin-bottom: 8px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-
-  .timestamp {
-    font-size: .5rem;
-    text-align: right;
-  }
-
-  .display-none {
-    display: none;
-  }
-
-  .wb-post-username {
-    font-weight: bolder;
-    font-size: 1.2rem;
-    padding-left: 1rem;
-  }
 
 </style>
