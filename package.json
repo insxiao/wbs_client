@@ -20,7 +20,6 @@
     "cordova": "^8.0.0",
     "cordova-android": "^7.0.0",
     "cordova-android-support-gradle-release": "^1.4.2",
-    "cordova-plugin-crosswalk-webview": "^2.4.0",
     "cordova-plugin-whitelist": "1",
     "element-ui": "^2.2.2",
     "global": "^4.3.2",
@@ -98,13 +97,6 @@
     ],
     "plugins": {
       "cordova-plugin-whitelist": {},
-      "cordova-plugin-crosswalk-webview": {
-        "XWALK_VERSION": "23+",
-        "XWALK_LITEVERSION": "xwalk_core_library_canary:17+",
-        "XWALK_COMMANDLINE": "--disable-pull-to-refresh-effect",
-        "XWALK_MODE": "embedded",
-        "XWALK_MULTIPLEAPK": "true"
-      },
       "cordova-android-support-gradle-release": {
         "ANDROID_SUPPORT_VERSION": "27.+"
       }
