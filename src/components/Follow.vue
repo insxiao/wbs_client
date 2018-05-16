@@ -1,5 +1,5 @@
 <template>
-  <v-layout column>
+  <v-layout v-scroll="scroll" column>
     <v-snackbar :value="snack.show">
       {{ snack.message }}
     </v-snackbar>
@@ -19,11 +19,15 @@
         :key = index>
       </PostItem>
 
-      <v-list-tile v-if="hasMore" key="load-more">
+      <v-list-tile ref="loadMore" key="load-more">
         <v-btn :loading="loading"
+               v-if="hasMore"
                block
                flat
                @click="loadMore"> load more </v-btn>
+        <v-list-tile-content v-else>
+          <p style="text-align: center">无更多数据</p>
+        </v-list-tile-content>
       </v-list-tile>
     </v-list>
   </v-layout>
@@ -54,6 +58,14 @@ export default {
     }
   },
   methods: {
+    scroll () {
+      const target = event.target.scrollingElement
+      if (target.scrollTop + target.clientHeight >= target.offsetHeight - this.$refs.loadMore.$el.offsetHeight) {
+        if (!this.loading && this.hasMore) {
+          this.loadMore()
+        }
+      }
+    },
     openPostDetail (itemId) {
       if (itemId) {
         this.$router.push('/post/' + itemId)
@@ -122,6 +134,9 @@ export default {
       )
     },
     loadMore () {
+      if (this.loading || !this.hasMore) {
+        return
+      }
       this.loading = true
       this.$client.axios.get(this.next.url)
         .then(
@@ -133,6 +148,7 @@ export default {
             } else {
               this.showMessage('获取数据失败')
             }
+            this.$logger.debug('LOAD MORE ', resp)
           },
           reason => {
 

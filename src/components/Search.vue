@@ -1,5 +1,5 @@
 <template>
-  <div class="search-container">
+  <div v-scroll="scroll" class="search-container">
     <v-snackbar
       top
       v-model="snack.show"
@@ -16,7 +16,7 @@
       </v-layout>
     </div>
     <toggle-group @updated="changeType" :items="toggleItems"></toggle-group>
-    <simple-list ref="searchResultList" class="result-list" :items="items">
+    <simple-list class="result-list" :items="items">
       <template name="header">
       </template>
       <!-- <post-item slot-scope="{ item, index }" :item="item" :id="item.id"></post-item> -->
@@ -28,8 +28,16 @@
                  :item="item"
                  :id="item.id"></component>
 
-        <v-list-tile v-show="hasMore" slot="footer" class="load-more">
-          <v-btn @click="loadMore()" block flat>{{ footerText }}</v-btn>
+        <v-list-tile ref="loadMore" slot="footer" class="load-more">
+          <v-btn
+            v-if="hasMore"
+            @click="loadMore()"
+            :loading="loading"
+            block
+            flat>{{ footerText }}</v-btn>
+          <v-list-tile-content v-else>
+            无更多数据
+          </v-list-tile-content>
         </v-list-tile>
 
     </simple-list>
@@ -55,10 +63,19 @@ export default {
       snack: {
         message: '',
         show: false
-      }
+      },
+      loading: false
     }
   },
   methods: {
+    scroll (event) {
+      const target = event.target.scrollingElement
+      if (target.scrollTop + target.clientHeight >= target.offsetHeight - this.$refs.loadMore.$el.offsetHeight) {
+        if (!this.loading && this.hasMore) {
+          this.loadMore()
+        }
+      }
+    },
     openUserHomepage (userId) {
       this.$router.push('/homepage/' + userId.toString())
     },
@@ -103,6 +120,11 @@ export default {
     updateSearchResults (data) {
       this.items = this.items.concat(data.data)
       this.next = data.next
+      if (this.type === 'post') {
+        this.hasMore = data.posts.length === data.next.params.size
+      } else if (this.type === 'user') {
+        this.hasMore = data.data.length === data.next.params.size
+      }
     },
     setSearchResults (data) {
       this.items = data.data
@@ -113,6 +135,11 @@ export default {
       this.items = []
     },
     loadMore () {
+      if (this.loading || !this.hasMore) {
+        return
+      }
+      this.$logger.debug('LOAD MORE ')
+      this.loading = true
       this.$client.axios
         .get(this.next.url)
         .then(r => {
@@ -120,18 +147,15 @@ export default {
             this.updateSearchResults(r.data)
           } else if (r.status === 204) {
             this.hideLoadMore()
-            this.showSnack({
-              type: 'info',
-              message: '无更多内容',
-              duration: 500
-            })
           }
-        }).catch(reason => {
-          this.showSnack({
-            type: 'error',
-            message: '无法获取内容',
-            duration: 500
-          })
+        // }).catch(reason => {
+        //   // this.showSnack({
+        //     type: 'error',
+        //     message: '无法获取内容',
+        //     duration: 500
+        //   })
+        }).finally(() => {
+          this.loading = false
         })
     },
     showLoadMore () {
