@@ -1,5 +1,8 @@
 <template>
-    <v-list class="container" ref="simpleList" :items="items">
+    <v-list id="wb-blog-list" v-scroll="scroll" class="blog-list-list">
+      <v-snackbar :value="snack.show" top>
+        {{snack.message}}
+      </v-snackbar>
       <template v-for="(item, idx) in items">
         <post-item
           @click-avatar="openUserHomepage"
@@ -9,70 +12,103 @@
           :key="idx"></post-item>
       </template>
 
-      <v-btn block flat v-show="hasMore" :height="'128px'" :disabled="loadMoreDisabled" id="load-more" @click="loadMore">
-        <p>{{ nextButtonText}}</p>
-      </v-btn>
-      <v-btn
-        class="wb-fixed-button" fab
-        bottom
-        right
-        small
-        fixed
-        color="pink"
-        @click="newPost"
-        >
-          <v-icon style="line-height:40px" center>add</v-icon>
+      <v-list-tile v-show="noContent">
+        <v-list-tile-content>
+          <p>No Content</p>
+        </v-list-tile-content>
+      </v-list-tile>
+      <v-list-tile  ref="loadMore" >
+        <v-btn v-if="hasMore" block
+               flat
+               v-show="hasMore"
+               :height="'128px'"
+               :disabled="loadMoreDisabled"
+               id="load-more"
+               :loading="moreLoading"
+               @click="loadMore">
+          <p>load more</p>
         </v-btn>
+        <v-list-tile-content v-else>
+          <p text-xs-center>No Content</p>
+        </v-list-tile-content>
+      </v-list-tile>
     </v-list>
 </template>
 
 <script>
 import SimpleList from './SimpleList'
 import PostItem from './PostItem'
+import EventBus from './EventBus'
 export default {
   props: ['dataUrl'],
   data () {
     return {
       items: [],
-      nextURL: null,
-      nextButtonText: 'load more',
+      next: {},
       loadMoreDisabled: false,
-      hasMore: true,
-      footerStyle: {
-        display: 'none'
+      hasMore: false,
+      moreLoading: false,
+      snack: {
+        show: false,
+        message: ''
       }
     }
   },
   methods: {
+    scroll (event) {
+      const target = event.target.scrollingElement
+      if (target.scrollTop + target.clientHeight >= target.offsetHeight - this.$refs.loadMore.$el.offsetHeight) {
+        if (!this.loading && this.hasMore) {
+          this.loadMore()
+        }
+      }
+    },
+    showSnack (message) {
+      if (typeof message === 'object') {
+        this.snack.messaage = message.message || 'error'
+      } else {
+        this.snack.message = message || 'error'
+      }
+      this.snack.show = true
+      setTimeout(() => { this.snack.show = false }, this.snack.timeout || 1000)
+    },
+    reload () {
+      return this.loadData()
+    },
+    loadData () {
+      this.$logger.debug('|> start load data <|')
+      return this.$client
+        .getMostRecentPost({ size: 10 })
+        .then((r) => {
+          if (r.status === 401) {
+            throw new Error('Unauthorized')
+          } else if (r.status === 200) {
+            this.items = r.data.posts
+            this.hasMore = r.data.posts.length === r.data.next.params.size
+            this.next = r.data.next
+            this.$logger.debug('load data success', r.data)
+          } else {
+            throw new Error('failed to fetch blogs')
+          }
+        })
+    },
     newPost () {
       this.$router.push('/new')
     },
-    disableLoadMore () {
-      this.nextButtonText = 'no more data'
-      this.loadMoreDisabled = true
-    },
-    showLoadMore () {
-      this.footerStyle.display = 'block'
-    },
     loadMore () {
-      this.$logger.debug('load more with ', this.nextURL)
-      if (!this.hasMore) return
-      const loading = this.$loading({ target: '#load-more' })
+      this.$logger.debug('load more with ', this.next)
+      if (!this.hasMore || this.moreLoading) return
+      this.moreLoading = true
       this.$client
         .axios
-        .get(this.nextURL)
+        .get(this.next.url)
         .then(r => {
           if (r.status === 200) {
-            const newData = r.data.posts
-            if (newData.length === 0) {
-              this.disableLoadMore()
-              this.hasMore = false
-            } else {
-              this.items = this.items.concat(r.data.posts)
-              this.nextURL = r.data.next.url
-            }
+            this.items = this.items.concat(r.data.posts)
+            this.hasMore = r.data.posts.length === r.data.next.params.size
+            this.next = r.data.next
           }
-        }).finally(() => loading.close())
+        }).finally(() => { this.moreLoading = false })
     },
     openUserHomepage (userId) {
       this.$logger.debug('open homepage of ', userId)
@@ -89,44 +125,33 @@ export default {
 
     }
   },
-  computed: { },
+  computed: {
+    noContent () {
+      return this.items === undefined || this.items === null || this.items.length === 0
+    }
+  },
   components: {
     SimpleList,
     PostItem
   },
   created () {
-    this.$client
-      .getMostRecentPost({ size: 10 })
-      .then((r) => {
-        if (r.status === 401) {
-          throw new Error('Unauthorized')
-        } else if (r.status === 200) {
-          this.items = r.data.posts
-          this.nextURL = r.data.next.url
-          this.$logger.debug(r.data.next)
-          this.showLoadMore()
-        } else {
-          throw new Error('failed to fetch blogs')
-        }
-      })
+    if (EventBus) {
+      EventBus.$on('e-new-item-post', () => this.reload())
+      EventBus.$on('e-refresh', () => this.reload())
+    } else {
+      this.$logger.error('EventBus is undefined')
+    }
+    this.loadData()
   },
   mounted () { }
 }
 </script>
 
 <style lang="less" scoped>
-
-  @import '../css/common';
-
   .container {
     overflow-y: auto;
-
   }
 
   #load-more {
-  }
-
-  .wb-fixed-button {
-    bottom: 64px;
   }
 </style>

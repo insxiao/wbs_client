@@ -13,9 +13,13 @@ export default class {
     }
     this.axios = axios.create({
       baseURL: endpoint,
-      withCredentials: true
+      withCredentials: true,
+      headers: {
+        'X-Requested-With': 'V'
+      }
     })
   }
+
   login (username, password) {
     return this.axios.get('/users/login', {
       auth: {
@@ -24,6 +28,7 @@ export default class {
       }
     })
   }
+
   register (registerInfo) {
     function checkRequiredInfo () {
       const requiredFields = ['name', 'password', 'gender']
@@ -53,6 +58,7 @@ export default class {
     checkRequiredInfo()
     return this.axios.post('/users', registerInfo)
   }
+
   /**
   * get user info
   *
@@ -76,6 +82,7 @@ export default class {
     })
     return p
   }
+
   postBlog (blog) {
     return this.axios.post('/posts', {
       content: blog.content,
@@ -83,15 +90,17 @@ export default class {
       timestamp: blog.timestamp
     })
   }
+
   commentBlog (comment) {
     assert(CommentData.is(comment), 'comment must be a CommentData')
     return this
       .axios
       .post('/comments', comment)
   }
+
   getMostRecentPost (options) {
     options = options || {}
-    const allowedParams = ['size', 'offset', 'userId']
+    const allowedParams = ['size', 'offset', 'userId', 'followerId']
     let params = Object.keys(options)
       .filter(k => allowedParams.indexOf(k) !== -1)
       .reduce((obj, key) => {
@@ -100,12 +109,14 @@ export default class {
       }, {})
     return this.axios.get('/posts', { params })
   }
+
   getPost (options) {
     if (!options.id) {
       throw new Error('missing required arguments')
     }
     return this.axios.get('/posts/' + options.id)
   }
+
   getAvatarUrl (avatar) {
     let endpoint = this.endpoint
     let path = 'avatar/' + avatar
@@ -115,6 +126,7 @@ export default class {
       return endpoint + '/' + path
     }
   }
+
   search (query) {
     const allowedParams = ['q', 'type', 'offset', 'size']
     const params = Object.keys(query)
@@ -128,9 +140,50 @@ export default class {
       params
     })
   }
+
   uploadImage (formData) {
     return this.axios.post('/formUpload', formData)
   }
+
+  /**
+   * @param success called if success
+   * @param failure called is failed
+   * @returns {*}
+   */
+  getFollowedUsers (success, failure) {
+    return this
+      .axios
+      .get('/follows')
+      .then(r => {
+        if (typeof success === 'function') {
+          success(r)
+        }
+        return Promise.resolve(r)
+      }).catch(reason => {
+        if (typeof failure === 'function') {
+          failure(reason)
+        }
+        return Promise.reject(reason)
+      })
+  }
+
+  getFollowedUser ({ userId }) {
+    return this.axios.get('/follows/' + userId)
+  }
+
+  follow ({ userId }) {
+    console.log('follow with', arguments)
+    return this.axios.post('/follows', {
+      userId
+    })
+  }
+
+  unfollow ({ userId }) {
+    return this.axios.delete('/follows', {
+      data: { userId }
+    })
+  }
+
   get userCache () {
     return userCache
   }

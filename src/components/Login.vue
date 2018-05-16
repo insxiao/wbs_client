@@ -1,30 +1,48 @@
 <template>
-  <div id="container">
-      <div class="icon-wrapper">
-      <div class="icon"></div>
-      </div>
+  <v-container id="container">
+    <v-snackbar top
+      v-model="showSnackMessage"
+    >
+      {{snackMessage}}
+      <v-btn align-end flat color="primary" @click.native="showSnackMessage = false">Close</v-btn>
+    </v-snackbar>
+      <v-layout class="icon">
+        <v-avatar tile align="center" size="128">
+          <img :src="icon" />
+        </v-avatar>
+      </v-layout>
       <div class="field-set">
         <v-text-field
-          name="input-10-1"
+          name="username"
           label="输入用户名"
+          :rules="commonRules.name"
           v-model="username"
         ></v-text-field>
         <v-text-field
+          name="password"
+          :rules="commonRules.password"
           v-model="password"
           type="password"
           label="输入密码"></v-text-field>
-        <v-btn class="field btn-rnd" color="success" @click="login">登录</v-btn>
-        <v-btn class="field btn-rnd" color="info" @click="register">注册</v-btn>
+        <v-btn block class="field btn-rnd" :loading="isLoading" color="success" @click="login">登录</v-btn>
+        <v-btn block :disabled="isLoading" class="field btn-rnd" color="info" @click="register">注册</v-btn>
       </div>
-  </div>
+  </v-container>
 </template>
 
 <script>
+import icon from '../../res/icon/android/ic_launcher.png'
+import commonRules from '../Rules'
 export default {
   data () {
     return {
+      commonRules,
       username: '',
-      password: ''
+      password: '',
+      isLoading: false,
+      showSnackMessage: false,
+      snackMessage: '',
+      icon
     }
   },
   methods: {
@@ -32,77 +50,46 @@ export default {
       this.$logger.log('click register')
       this.$router.push('register')
     },
+    showSnack (message) {
+      this.snackMessage = message.message || message
+      this.showSnackMessage = true
+    },
     login () {
       if (this.username.length === 0) {
-        this.$msg('用户名不能为空')
+        this.showSnack('用户名不能为空')
         return
       }
       if (this.password.length === 0) {
-        this.$msg('密码不能为空')
+        this.showSnack('密码不能为空')
         return
       }
-      const loading = this.$loading()
+      this.isLoading = true
+
       this.$client.login(this.username, this.password)
         .then(r => {
-          loading.close()
+          this.$logger.debug('response data ' + r.data)
           if (r.status === 200) {
-            this.$logger.debug('response data ' + r.data)
-
             this.$appState.currentUser = r.data
-          }
-          this.$logger.debug('response object ' + r)
-          return {
-            status: 'Ok',
-            statusCode: 200
+            this.$router.push('/main')
+          } else {
+            this.$logger.debug('response object ' + r)
           }
         }, reason => {
-          loading.close()
-          this.$msg({
-            message: '登陆失败，用户名或密码错误',
-            type: 'error',
-            duration: 1000
-          })
+          if (reason.response) {
+            this.showSnack('登陆失败，用户名或密码错误')
+          } else {
+            this.showSnack('网络错误')
+          }
+          this.$logger.debug('error reason', reason)
         }).then(() => {
-          this.$router.push('/main')
+          this.isLoading = false
         })
     }
   }
 }
+
 </script>
 
 <style scoped lang="less">
-    #container {
-        width: 80%;
-        margin-left: auto;
-        margin-right: auto;
-    }
 
-    .icon-wrapper {
-        padding: 2rem;
-    }
-    .icon {
-        margin-left: auto;
-        margin-right: auto;
-        width: 128px;
-        height: 128px;
-    }
-
-    .field-set .field  {
-        margin-top: .25rem;
-        margin-bottom: .23rem;
-    }
-
-    .field-set button {
-        width: 100%;
-        &:first-of-type {
-            background-color: red;
-            border-color: gray;
-        }
-
-    }
-
-    .field-set input {
-
-        width: 100%;
-    }
 </style>

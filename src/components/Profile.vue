@@ -1,6 +1,6 @@
 <template>
   <div class="wb-profile">
-    <UserItem @click-item="openUserHomepage" :item="$appState.currentUser" :id="-1"></UserItem>
+    <UserItem @click-user-item="openUserHomepage" :item="$appState.currentUser" :id="-1"></UserItem>
     <v-list>
       <v-subheader>用户注册信息</v-subheader>
 
