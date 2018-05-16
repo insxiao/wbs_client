@@ -19,6 +19,7 @@ export default class {
       }
     })
   }
+
   login (username, password) {
     return this.axios.get('/users/login', {
       auth: {
@@ -27,6 +28,7 @@ export default class {
       }
     })
   }
+
   register (registerInfo) {
     function checkRequiredInfo () {
       const requiredFields = ['name', 'password', 'gender']
@@ -56,6 +58,7 @@ export default class {
     checkRequiredInfo()
     return this.axios.post('/users', registerInfo)
   }
+
   /**
   * get user info
   *
@@ -79,6 +82,7 @@ export default class {
     })
     return p
   }
+
   postBlog (blog) {
     return this.axios.post('/posts', {
       content: blog.content,
@@ -86,12 +90,14 @@ export default class {
       timestamp: blog.timestamp
     })
   }
+
   commentBlog (comment) {
     assert(CommentData.is(comment), 'comment must be a CommentData')
     return this
       .axios
       .post('/comments', comment)
   }
+
   getMostRecentPost (options) {
     options = options || {}
     const allowedParams = ['size', 'offset', 'userId', 'followerId']
@@ -103,12 +109,14 @@ export default class {
       }, {})
     return this.axios.get('/posts', { params })
   }
+
   getPost (options) {
     if (!options.id) {
       throw new Error('missing required arguments')
     }
     return this.axios.get('/posts/' + options.id)
   }
+
   getAvatarUrl (avatar) {
     let endpoint = this.endpoint
     let path = 'avatar/' + avatar
@@ -118,6 +126,7 @@ export default class {
       return endpoint + '/' + path
     }
   }
+
   search (query) {
     const allowedParams = ['q', 'type', 'offset', 'size']
     const params = Object.keys(query)
@@ -131,6 +140,7 @@ export default class {
       params
     })
   }
+
   uploadImage (formData) {
     return this.axios.post('/formUpload', formData)
   }

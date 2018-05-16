@@ -50,6 +50,7 @@ import PostItem from './PostItem'
 import UserItem from './UserItem'
 import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import { default as ToggleGroup, ToggleItem } from './ToggleGroup'
+
 export default {
   data () {
     return {
@@ -198,21 +199,6 @@ export default {
     & .simple-input:focus {
       outline: none;
     }
-  }
-
-  .search-button {
-    position: absolute;
-    top: 0;
-    right: 5px;
-    height: 100%;
-
-    &:hover {
-      cursor: pointer;
-    }
-  }
-
-  #search-icon {
-    height: 100%;
   }
 
   .result-list {
