@@ -23,7 +23,7 @@ export default class {
   login (username, password) {
     return this.axios.get('/users/login', {
       auth: {
-        username,
+        username: username,
         password
       }
     })

@@ -1,5 +1,5 @@
 <template>
-<div class="wb-user-home">
+<div class="wb-user-home" v-scroll="scroll">
   <v-snackbar :timeout="snack.timeout" top :value="snack.show" >
     {{snack.message}}
   </v-snackbar>
@@ -42,14 +42,20 @@
         @click-item="openPostDetail"
         :item="item"
         :id="index"></PostItem>
-      <v-btn
-        flat
-        block
-        v-show="hasMore"
-        @click="loadMore()"
-        slot="footer">Load More<v-icon>refresh</v-icon></v-btn>
+
+      <v-list-tile ref="loadMore" slot="footer">
+        <v-btn
+          flat
+          block
+          :loading="moreLoading"
+          v-if="hasMore"
+          @click="loadMore()">Load More<v-icon>refresh</v-icon></v-btn>
+        <v-list-tile-title v-else>
+          无更多数据
+        </v-list-tile-title>
+      </v-list-tile>
       <v-list-tile v-show="items === undefined || items === null || items.length === 0" slot="empty">
-        <v-list-tile-content text-xs-center>No Content</v-list-tile-content>
+        <v-list-tile-content text-xs-center>无内容</v-list-tile-content>
       </v-list-tile>
     </SimpleList>
   </div>
@@ -92,7 +98,8 @@ export default {
         timeout: 1000
       },
       followed: false,
-      followLoading: false
+      followLoading: false,
+      moreLoading: false
     }
   },
   computed: {
@@ -116,6 +123,14 @@ export default {
     this.getBlogList()
   },
   methods: {
+    scroll () {
+      const target = event.target.scrollingElement
+      if (target.scrollTop + target.clientHeight >= target.offsetHeight - this.$refs.loadMore.$el.offsetHeight) {
+        if (!this.moreLoading && this.hasMore) {
+          this.loadMore()
+        }
+      }
+    },
     follow () {
       const followerId = this.$appState.currentUser.id
       const userId = this.user.id
@@ -207,7 +222,12 @@ export default {
       })
     },
     loadMore () {
-      this.$logger.debug(this.next)
+      if (!this.hasMore || this.moreLoading) {
+        return
+      }
+
+      this.moreLoading = true
+
       this.$client
         .axios
         .get(this.next.url)
@@ -216,13 +236,8 @@ export default {
             if (r.data.posts.length > 0) {
               this.items = this.items.concat(r.data.posts)
               this.next = r.data.next
-            } else {
-              this.hasMore = false
-              this.showSnack({
-                message: '无更多数据',
-                type: 'warning'
-              })
             }
+            this.hasMore = r.data.posts.length === r.data.next.params.size
           } else {
             throw new Error('response status is ' + r.status)
           }
@@ -233,7 +248,7 @@ export default {
             message: '无法载入数据',
             type: 'error'
           })
-        })
+        }).finally(() => { this.moreLoading = false })
     }
   },
   watch: {
@@ -252,6 +267,7 @@ export default {
 .wb-home-name {
   text-align: center;
 }
+
 .wb-header-settings {
   position: relative;
   left: 94%;
