@@ -7,12 +7,13 @@
       {{snack.message}}
       <v-btn flat color="primary" @click.native="snack.show = false">Close</v-btn>
     </v-snackbar>
-    <div class="search-box">
-    <v-layout row>
-      <v-flex xs12>
-        <v-text-field flat append-icon="search" :append-icon-cb="search" v-model="text" solo type="text" name="search-text">
-        </v-text-field>
-      </v-flex>
+    <div class="" app>
+      <v-layout row>
+        <v-flex xs12>
+          <v-text-field flat append-icon="search" :append-icon-cb="search" v-model="text" solo type="text"
+                        name="search-text">
+          </v-text-field>
+        </v-flex>
       </v-layout>
     </div>
     <toggle-group @updated="changeType" :items="toggleItems"></toggle-group>
@@ -28,7 +29,7 @@
                  :item="item"
                  :id="item.id"></component>
 
-        <v-list-tile ref="loadMore" slot="footer" class="load-more">
+        <v-list-tile v-show="searched" ref="loadMore" slot="footer" class="load-more">
           <v-btn
             v-if="hasMore"
             @click="loadMore()"
@@ -65,7 +66,8 @@ export default {
         message: '',
         show: false
       },
-      loading: false
+      loading: false,
+      searched: false
     }
   },
   methods: {
@@ -84,6 +86,7 @@ export default {
       this.$router.push('/post/' + postId.toString())
     },
     search () {
+      this.searched = true
       if (!this.text || this.text.length === 0) {
         this.showSnack({
           message: '请输入搜索内容', type: 'warning'
@@ -98,7 +101,6 @@ export default {
         if (r.status === 200) {
           this.$logger.debug(r)
           this.setSearchResults(r.data)
-          this.showLoadMore()
         } else if (r.status === 204) {
           this.showSnack({ message: '无内容', type: 'warning' })
         }

@@ -2,7 +2,11 @@
   <div class="wb-profile">
     <UserItem @click-user-item="openUserHomepage" :item="$appState.currentUser" :id="-1"></UserItem>
     <v-list>
-      <v-subheader>用户注册信息</v-subheader>
+      <v-subheader>
+        用户注册信息
+        <v-spacer></v-spacer>
+          <v-icon v-show="false" @click="editUserInfo">edit</v-icon>
+      </v-subheader>
 
       <v-list-tile v-for="(value, key) of userProperties" :key="key">
         <v-list-tile-content>
@@ -19,20 +23,41 @@
       </v-list-tile>
     </v-list>
     <v-divider/>
-    <div class="clear-data">
-      <v-btn depressed block color="error" @click="clearDataAndRestart">Log out</v-btn>
-    </div>
+    <v-list>
+      <v-list-tile>
+        <v-btn block
+               depressed
+               @click="showPasswordUpdateDialog = true"
+               color="info"><v-icon>edit</v-icon>修改密码</v-btn>
+      </v-list-tile>
+      <v-list-tile class="clear-data">
+        <v-btn
+          depressed
+          block
+          color="error"
+          @click="clearDataAndRestart">Log out</v-btn>
+      </v-list-tile>
+    </v-list>
+    <dialog-update-password
+      @close="showPasswordUpdateDialog = false"
+      @success="logout"
+      persistent
+      :value="showPasswordUpdateDialog"></dialog-update-password>
   </div>
 </template>
 
 <script>
 import ProfileListItem from './ProfileListItem'
 import UserItem from './UserItem'
+import DialogUpdatePassword from './DialogUpdatePassword'
+
 const localStorage = window.localStorage
 
 export default {
   data () {
     return {
+      showPasswordUpdateDialog: false,
+      editUserInfoDialogVisiable: false,
       profile_item_order: ['id', 'avatar', 'name', 'gender', 'email', 'birthday'],
       access_modifier: {
         id: {
@@ -60,6 +85,7 @@ export default {
   },
   props: ['userdata'],
   computed: {
+
     currentUser () {
       return this.$appState.getCurrentUser()
     },
@@ -83,6 +109,21 @@ export default {
     }
   },
   methods: {
+    logout () {
+      if (window.localStorage) {
+        window.localStorage.clear()
+      }
+      if (this.$router) {
+        this.$router.replace('/login')
+      }
+    },
+    // TODO
+    editUserInfo () {
+      this.editUserInfoDialogVisiable = true
+    },
+    closeUserInfoDialog () {
+      this.editUserInfoDialogVisiable = false
+    },
     clearDataAndRestart () {
       localStorage.clear()
       this.$router.replace('/login')
@@ -93,28 +134,11 @@ export default {
   },
   components: {
     ProfileListItem,
-    UserItem
+    UserItem,
+    DialogUpdatePassword
   }
 }
 </script>
 
 <style lang="less" scoped>
-@import url("../css/common.less");
-.profile-list {
-  .scroll-list-box;
-  padding: 1rem 1rem 0 1rem;
-}
-
-.profile-name {
-  font-size: 0.8rem;
-}
-
-.profile-value {
-  font-size: 3rem;
-  overflow-wrap: normal;
-}
-
-.wb-profile-logout {
-  width:100%;
-}
 </style>

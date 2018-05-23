@@ -8,7 +8,8 @@ export default class PostData {
     if (timestamp) {
       this.timestamp = timestamp
     } else {
-      this.timestamp = (new Date()).toISOString()
+      const tzoffset = (new Date()).getTimezoneOffset() * 60000 // offset in milliseconds
+      this.timestamp = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1)
     }
   }
 

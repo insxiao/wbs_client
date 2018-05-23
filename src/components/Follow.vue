@@ -1,6 +1,6 @@
 <template>
   <v-layout v-scroll="scroll" column>
-    <v-snackbar :value="snack.show">
+    <v-snackbar top :value="snack.show">
       {{ snack.message }}
     </v-snackbar>
     <v-flex>
@@ -160,6 +160,9 @@ export default {
     EventBus.$on('e-refresh', () => this.refresh())
     this.loadFollowedUsers()
     this.loadFollowPosts()
+  },
+  beforeDestroy () {
+    EventBus.$off('e-refresh')
   }
 }
 </script>

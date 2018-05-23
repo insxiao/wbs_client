@@ -13,7 +13,12 @@
         </v-avatar>
         <v-toolbar-title>客户端</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn :loading="refreshing" flat icon @click="clickedRefresh">
+        <v-btn
+          v-show="showFloatButton"
+          :loading="refreshing"
+          flat
+          icon
+          @click="clickedRefresh">
           <v-icon>refresh</v-icon>
         </v-btn>
       </v-toolbar>

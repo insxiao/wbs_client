@@ -18,7 +18,9 @@ export default class CommentData {
     this.content = content
     this.userId = userId
     this.stars = 0
-    this.timestamp = new Date().toISOString()
+
+    var tzoffset = (new Date()).getTimezoneOffset() * 60000 // offset in milliseconds
+    this.timestamp = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1)
   }
 
   static of (blogId, content, userId) {

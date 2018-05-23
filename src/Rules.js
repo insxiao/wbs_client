@@ -33,8 +33,8 @@ export default {
       '用户名只能由字母数字组成且第一个符号不能是数字'
   ],
   password: [
-    p => (p.length > 0) || '密码不能为空',
-    p => (p.length >= 6) || '密码不能少于六位',
+    p => (p && p.length > 0) || '密码不能为空',
+    p => (p && p.length >= 6) || '密码不能少于六位',
     n => isAlphanumeric(n) ||
       '密码只能由字母数字组成'
   ]

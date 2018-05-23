@@ -3,13 +3,13 @@
       <v-snackbar :value="snack.show" top>
         {{snack.message}}
       </v-snackbar>
-      <template v-for="(item, idx) in items">
+      <template v-for="item in items">
         <post-item
           @click-avatar="openUserHomepage"
           @click-item="openPostDetail"
           :item="item"
           :id="item.id"
-          :key="idx"></post-item>
+          :key="item.id"></post-item>
       </template>
 
       <v-list-tile v-show="noContent">
@@ -143,7 +143,12 @@ export default {
     }
     this.loadData()
   },
-  mounted () { }
+  beforeDestroy () {
+    if (EventBus) {
+      EventBus.$off('e-new-item-post')
+      EventBus.$off('e-refresh')
+    }
+  }
 }
 </script>
 

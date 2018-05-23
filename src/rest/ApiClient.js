@@ -184,6 +184,16 @@ export default class {
     })
   }
 
+  changePassword ({id, oldPassword, newPassword},
+    success,
+    failure) {
+    return this.axios.post('/users/' + id + '/password_rest', {
+      id,
+      oldPassword: oldPassword,
+      newPassword: newPassword
+    })
+  }
+
   get userCache () {
     return userCache
   }
